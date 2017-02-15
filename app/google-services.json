@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "197117308745",
+    "firebase_url": "https://bobo-fea90.firebaseio.com",
+    "project_id": "bobo-fea90",
+    "storage_bucket": "bobo-fea90.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:197117308745:android:c2ad75cb3dd2a1d2",
+        "android_client_info": {
+          "package_name": "com.finalproject.youcef.bobo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "197117308745-9p6nlbmoosj0830uitcqkthlndnglmjf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.finalproject.youcef.bobo",
+            "certificate_hash": "F93DD87A34474E05055C125F1B1CD500BCF5BE3B"
+          }
+        },
+        {
+          "client_id": "197117308745-0f7v4da8h1gb3m19gb7ddfq6gp4rj7k1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCu1O1WGm5K3gC4EOL2aFY7zJLHFT74SeA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "197117308745-0f7v4da8h1gb3m19gb7ddfq6gp4rj7k1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
