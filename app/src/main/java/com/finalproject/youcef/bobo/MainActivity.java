@@ -13,6 +13,7 @@ import android.text.InputFilter;
 import android.widget.EditText;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.sql.SQLException;
@@ -38,11 +39,12 @@ public class MainActivity extends AppCompatActivity implements ValueEventListene
     private Button mCheckButton;
     private EditText taxireg;
     private ProgressBar progressBar;
+    private TextView taxiFname, taxiLname, licenseNum, taxiLexp, taxiRegNum;
 
     //connection variables
-    private String usern, pass;
-    private String ip, db;
-    private Connection con;
+//    private String usern, pass;
+//    private String ip, db;
+//    private Connection con;
 
     //////////using classes from the FirebaseDatabase API //////////
     //////////These are Firebase instance variables //////////
@@ -70,6 +72,11 @@ public class MainActivity extends AppCompatActivity implements ValueEventListene
 
         //Retrieving values from edit text & button
         taxireg = (EditText) findViewById(R.id.checkTF);
+        taxiFname = (TextView) findViewById(R.id.textView2);
+        taxiLname = (TextView) findViewById(R.id.textView3);
+        licenseNum = (TextView) findViewById(R.id.textView4);
+        taxiLexp = (TextView) findViewById(R.id.textView6);
+        taxiRegNum = (TextView) findViewById(R.id.textView7);
         mCheckButton = (Button) findViewById(R.id.button);
 
 //        //need to declare connection attributes
@@ -110,9 +117,15 @@ public class MainActivity extends AppCompatActivity implements ValueEventListene
     public void onChildAdded(DataSnapshot dataSnapshot, String s) {
         Map<String, Object> newPost = (Map<String, Object>) dataSnapshot.getValue();
         Log.d("myTag","Map "+dataSnapshot);
-        Toast.makeText(getApplicationContext(), newPost.get("first_name").toString(), Toast.LENGTH_SHORT).show();
-        Toast.makeText(getApplicationContext(), newPost.get("last_name").toString(), Toast.LENGTH_SHORT).show();
-        Toast.makeText(getApplicationContext(), newPost.get("license_exp").toString(), Toast.LENGTH_SHORT).show();
+        taxiFname.setText("First Name: " + newPost.get("first_name").toString());
+        taxiLname.setText("Last Name: " + newPost.get("last_name").toString());
+        licenseNum.setText("License Number: " + newPost.get("license_no").toString());
+        taxiLexp.setText("License Expiry Date : " + newPost.get("license_exp").toString());
+        taxiRegNum.setText("Car Reg Number : " + newPost.get("car_reg").toString());
+
+//        Toast.makeText(getApplicationContext(), newPost.get("first_name").toString(), Toast.LENGTH_SHORT).show();
+//        Toast.makeText(getApplicationContext(), newPost.get("last_name").toString(), Toast.LENGTH_SHORT).show();
+//        Toast.makeText(getApplicationContext(), newPost.get("license_exp").toString(), Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -132,6 +145,7 @@ public class MainActivity extends AppCompatActivity implements ValueEventListene
 
     @Override
     public void onCancelled(DatabaseError databaseError) {
+//        Log.e(TAG, "Failed to read user", error.toException());
 
     }
 
