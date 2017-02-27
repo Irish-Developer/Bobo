@@ -66,17 +66,17 @@ public class MainActivity extends AppCompatActivity implements ValueEventListene
 
         mFirebaseDatabase = FirebaseDatabase.getInstance();
 
-        mTaxiDatabaseReference = mFirebaseDatabase.getReference().child("taxi_data");
+        mTaxiDatabaseReference = mFirebaseDatabase.getReference().child("taxi_data2");
 
         //Retrieving values from edit text & button
         taxireg = (EditText) findViewById(R.id.checkTF);
         mCheckButton = (Button) findViewById(R.id.button);
 
-        //need to declare connection attributes
-        ip = "server ip";
-        db = "name of database";
-        usern = "db username";
-        pass = "db password";
+//        //need to declare connection attributes
+//        ip = "server ip";
+//        db = "name of database";
+//        usern = "db username";
+//        pass = "db password";
 
         //Check button
         mCheckButton.setOnClickListener(new View.OnClickListener(){
@@ -86,8 +86,11 @@ public class MainActivity extends AppCompatActivity implements ValueEventListene
                 //DatabaseReference ref = mTaxiDatabaseReference.child("1");
                 //DatabaseReference name = ref.child("last_name");
                 Query a = mTaxiDatabaseReference.orderByChild("car_reg").equalTo(taxi_detail);
+                Log.d("myTag","car reg"+mTaxiDatabaseReference);
+                Query b = mTaxiDatabaseReference.orderByChild("license_no").equalTo(taxi_detail); //new 24/02
 
                 a.addChildEventListener(MainActivity.this);
+                b.addChildEventListener(MainActivity.this); //new
                 //name.addListenerForSingleValueEvent(MainActivity.this);
 //                Toast.makeText(getApplicationContext(), name.getKey(), Toast.LENGTH_LONG).show();
 //                CheckTaxi checkTaxi = new CheckTaxi();
@@ -106,7 +109,10 @@ public class MainActivity extends AppCompatActivity implements ValueEventListene
     @Override
     public void onChildAdded(DataSnapshot dataSnapshot, String s) {
         Map<String, Object> newPost = (Map<String, Object>) dataSnapshot.getValue();
-        Toast.makeText(getApplicationContext(), newPost.get("first_name").toString(), Toast.LENGTH_LONG).show();
+        Log.d("myTag","Map "+dataSnapshot);
+        Toast.makeText(getApplicationContext(), newPost.get("first_name").toString(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), newPost.get("last_name").toString(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), newPost.get("license_exp").toString(), Toast.LENGTH_SHORT).show();
     }
 
     @Override
