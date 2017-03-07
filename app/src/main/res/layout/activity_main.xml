@@ -14,7 +14,7 @@
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="50sp"
-        android:inputType="text"
+        android:inputType="text|textAutoCorrect"
         android:ems="10"
         android:id="@+id/checkTF"
         android:hint="Enter Taxi Number"

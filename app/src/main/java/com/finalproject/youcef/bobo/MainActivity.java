@@ -1,15 +1,21 @@
 package com.finalproject.youcef.bobo;
 
+import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.support.annotation.BoolRes;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AlertDialog;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.os.Bundle;
 import android.content.Intent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.text.InputFilter;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -39,12 +45,8 @@ public class MainActivity extends AppCompatActivity implements ValueEventListene
     private Button mCheckButton;
     private EditText taxireg;
     private ProgressBar progressBar;
-    private TextView taxiFname, taxiLname, licenseNum, taxiLexp, taxiRegNum;
-
-    //connection variables
-//    private String usern, pass;
-//    private String ip, db;
-//    private Connection con;
+    private TextView taxiFname, taxiLname, licenseNum, taxiLexp, taxiRegNum, taxiFname2;
+    final Context context = this;
 
     //////////using classes from the FirebaseDatabase API //////////
     //////////These are Firebase instance variables //////////
@@ -79,34 +81,91 @@ public class MainActivity extends AppCompatActivity implements ValueEventListene
         taxiRegNum = (TextView) findViewById(R.id.textView7);
         mCheckButton = (Button) findViewById(R.id.button);
 
-//        //need to declare connection attributes
-//        ip = "server ip";
-//        db = "name of database";
-//        usern = "db username";
-//        pass = "db password";
 
         //Check button
         mCheckButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(context); // Declare new Alert Dialog
+                Log.d("myTab","declare new AlertDialog");
+
+                // Get the layout inflater
+                LayoutInflater inflater = getLayoutInflater();
+
                 String taxi_detail = taxireg.getText().toString();
-                //DatabaseReference ref = mTaxiDatabaseReference.child("1");
-                //DatabaseReference name = ref.child("last_name");
                 Query a = mTaxiDatabaseReference.orderByChild("car_reg").equalTo(taxi_detail);
                 Log.d("myTag","car reg"+mTaxiDatabaseReference);
                 Query b = mTaxiDatabaseReference.orderByChild("license_no").equalTo(taxi_detail); //new 24/02
 
                 a.addChildEventListener(MainActivity.this);
-                b.addChildEventListener(MainActivity.this); //new
-                //name.addListenerForSingleValueEvent(MainActivity.this);
-//                Toast.makeText(getApplicationContext(), name.getKey(), Toast.LENGTH_LONG).show();
-//                CheckTaxi checkTaxi = new CheckTaxi();
-//                checkTaxi.execute("");
+                b.addChildEventListener(MainActivity.this); //adds license number query to
+
+
+//                builder.setView(inflater.inflate(R.layout.driver_details, null));
+//                taxiFname2 = (TextView) findViewById(R.id.textView8);
+
+                // set title
+//                builder.setTitle("Your Title");
+
+                // set dialog message
+//                Builder
+//                        .setMessage("Click yes to exit!")
+//                        .setCancelable(false)
+//                        .setPositiveButton("Yes",new DialogInterface.OnClickListener() {
+//                            public void onClick(DialogInterface dialog,int id) {
+//                                // if this button is clicked, close
+//                                // current activity
+//                                MainActivity.this.finish();
+//                            }
+//                        })
+//                        .setNegativeButton("No",new DialogInterface.OnClickListener() {
+//                            public void onClick(DialogInterface dialog,int id) {
+//                                // if this button is clicked, just close
+//                                // the dialog box and do nothing
+//                                dialog.cancel();
+//                            }
+//                        });
+
+                // create alert dialog
+                AlertDialog alertDialog = builder.create();
+
+                // show it
+                alertDialog.show();
+
+
             }
 
         });
 
     }
+
+
+
+
+//    @Override
+//    public Dialog onClickDialog(Bundle savedInstanceState) {
+//        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+//        // Get the layout inflater
+//        LayoutInflater inflater = getActivity().getLayoutInflater();
+//
+//        // Inflate and set the layout for the dialog
+//        // Pass null as the parent view because its going in the dialog layout
+//        builder.setView(inflater.inflate(R.layout.driver_details, null))
+//                // Add action buttons
+//                .setPositiveButton(R.string.signin, new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int id) {
+//                        // sign in the user ...
+//                    }
+//                })
+//                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+//                    public void onClick(DialogInterface dialog, int id) {
+//                        LoginDialogFragment.this.getDialog().cancel();
+//                    }
+//                });
+//        return builder.create();
+//    }
 
     @Override
     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -122,6 +181,7 @@ public class MainActivity extends AppCompatActivity implements ValueEventListene
         licenseNum.setText("License Number: " + newPost.get("license_no").toString());
         taxiLexp.setText("License Expiry Date : " + newPost.get("license_exp").toString());
         taxiRegNum.setText("Car Reg Number : " + newPost.get("car_reg").toString());
+
 
 //        Toast.makeText(getApplicationContext(), newPost.get("first_name").toString(), Toast.LENGTH_SHORT).show();
 //        Toast.makeText(getApplicationContext(), newPost.get("last_name").toString(), Toast.LENGTH_SHORT).show();
