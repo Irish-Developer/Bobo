@@ -1,11 +1,21 @@
 apply plugin: 'com.android.application'
 
+repositories {
+    mavenLocal()
+    flatDir {
+        dirs 'libs'
+
+        //this repository works with the firebaseui dependency
+        maven { url 'https://maven.fabric.io/public' }
+    }
+}
+
 android {
     compileSdkVersion 24
     buildToolsVersion "24.0.3"
     defaultConfig {
         applicationId "com.finalproject.youcef.bobo"
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 24
         versionCode 1
         versionName "1.0"
@@ -24,12 +34,16 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
-    testCompile 'junit:junit:4.12'
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:24.2.1'
 
     //Firebase dependencies
+    compile 'com.android.support:appcompat-v7:24.2.1'
     compile 'com.google.firebase:firebase-core:10.0.1'
     compile 'com.google.firebase:firebase-database:10.0.1'
+    compile 'com.google.firebase:firebase-auth:10.0.1'
+    //Authentication UI (reference: https://github.com/firebase/FirebaseUI-Android/tree/master/auth)
+    compile 'com.firebaseui:firebase-ui-auth:1.0.1'
+
+    testCompile 'junit:junit:4.12'
 }
 apply plugin: 'com.google.gms.google-services'

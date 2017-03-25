@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.annotation.BoolRes;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AlertDialog;
 import android.os.AsyncTask;
@@ -12,6 +13,8 @@ import android.os.Bundle;
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.text.InputFilter;
@@ -22,31 +25,33 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.sql.SQLException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.Map;
 
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
+import com.firebase.ui.auth.AuthUI;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 
-public class MainActivity extends AppCompatActivity implements ValueEventListener, ChildEventListener {
+public class
+
+MainActivity extends AppCompatActivity implements ValueEventListener, ChildEventListener {
 
     public static final int DEFAULT_INPUT_LIMIT = 12;
+    public static final int RC_SIGN_IN = 1; //RC stands for Request Code
 
     private Button mCheckButton;
+    private String mUsername;
     private EditText taxireg;
     private ProgressBar progressBar;
     private TextView taxiFname, taxiLname, licenseNum, taxiLexp, taxiRegNum, taxiFname2;
-    final Context context = this;
+//    final Context context = this;
 
     //////////using classes from the FirebaseDatabase API //////////
     //////////These are Firebase instance variables //////////
@@ -55,6 +60,9 @@ public class MainActivity extends AppCompatActivity implements ValueEventListene
     private FirebaseDatabase mFirebaseDatabase;
     //DatabaseReference object is a class that references a specific part of the database
     private DatabaseReference mTaxiDatabaseReference;
+    //Authentication Instance variables
+    private FirebaseAuth mFirebaseAuth;
+    private FirebaseAuth.AuthStateListener mAuthStateListener;
     //read from the taxi node on the database
     private ChildEventListener mChildEventListener;
 
@@ -69,6 +77,7 @@ public class MainActivity extends AppCompatActivity implements ValueEventListene
         setContentView(R.layout.activity_main);
 
         mFirebaseDatabase = FirebaseDatabase.getInstance();
+        mFirebaseAuth = FirebaseAuth.getInstance();
 
         mTaxiDatabaseReference = mFirebaseDatabase.getReference().child("taxi_data2");
 
@@ -87,11 +96,11 @@ public class MainActivity extends AppCompatActivity implements ValueEventListene
             @Override
             public void onClick(View v){
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(context); // Declare new Alert Dialog
-                Log.d("myTab","declare new AlertDialog");
-
-                // Get the layout inflater
-                LayoutInflater inflater = getLayoutInflater();
+//                AlertDialog.Builder builder = new AlertDialog.Builder(context); // Declare new Alert Dialog
+//                Log.d("myTab","declare new AlertDialog");
+//
+//                // Get the layout inflater
+//                LayoutInflater inflater = getLayoutInflater();
 
                 String taxi_detail = taxireg.getText().toString();
                 Query a = mTaxiDatabaseReference.orderByChild("car_reg").equalTo(taxi_detail);
@@ -127,18 +136,85 @@ public class MainActivity extends AppCompatActivity implements ValueEventListene
 //                            }
 //                        });
 
-                // create alert dialog
-                AlertDialog alertDialog = builder.create();
-
-                // show it
-                alertDialog.show();
+//                // create alert dialog
+//                AlertDialog alertDialog = builder.create();
+//
+//                // show it
+//                alertDialog.show();
 
 
             }
 
         });
 
+        mAuthStateListener = new FirebaseAuth.AuthStateListener(){
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth){
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null){
+                    //user is signed in
+                    Toast.makeText(MainActivity.this, "You are now signed in. Welcome!", Toast.LENGTH_SHORT).show();
+//                    onSignedIInitialize(user.getDisplayName());
+                } else {
+                    //user is not signed in
+//                    onSignedOutCleanup();
+                    startActivityForResult(
+                            AuthUI.getInstance()
+                                    .createSignInIntentBuilder()
+                                    .setIsSmartLockEnabled(false)
+                                    .setProviders(
+                                            AuthUI.EMAIL_PROVIDER,
+                                            AuthUI.GOOGLE_PROVIDER)
+                                    .build(),
+                            RC_SIGN_IN);
+                }
+
+            }
+        };
+
     }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == RC_SIGN_IN){
+            if (requestCode == RESULT_OK){
+                Toast.makeText(this, "Signed in!", Toast.LENGTH_SHORT).show();
+            }else if (requestCode == RESULT_CANCELED){
+                Toast.makeText(this, "Sign in Canceled", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.bobo_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.sign_out_option:
+                //Sign out
+                AuthUI.getInstance().signOut(this);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    //this pauses the login procedure at the launch (if user is already logged in)
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mAuthStateListener != null){
+            mFirebaseAuth.removeAuthStateListener(mAuthStateListener);
+        }
+    }
+
+
 
 
 
@@ -182,10 +258,6 @@ public class MainActivity extends AppCompatActivity implements ValueEventListene
         taxiLexp.setText("License Expiry Date : " + newPost.get("license_exp").toString());
         taxiRegNum.setText("Car Reg Number : " + newPost.get("car_reg").toString());
 
-
-//        Toast.makeText(getApplicationContext(), newPost.get("first_name").toString(), Toast.LENGTH_SHORT).show();
-//        Toast.makeText(getApplicationContext(), newPost.get("last_name").toString(), Toast.LENGTH_SHORT).show();
-//        Toast.makeText(getApplicationContext(), newPost.get("license_exp").toString(), Toast.LENGTH_SHORT).show();
     }
 
     @Override
