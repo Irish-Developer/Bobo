@@ -10,7 +10,8 @@
         android:theme="@style/AppTheme">
 
         <activity
-                    android:name=".MainActivity">
+                    android:theme="@style/AppTheme.NoBarTitle"
+                    android:name=".RegisterActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -18,6 +19,16 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:theme="@style/AppTheme.NoBarTitle"
+            android:name=".LoginActivity">
+
+        </activity>
+
+        <activity
+            android:name=".MainActivity">
+
+        </activity>
 
         <uses-permission android:name="android.permission.INTERNET" />
 

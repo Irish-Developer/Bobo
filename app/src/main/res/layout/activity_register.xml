@@ -4,8 +4,8 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#00796B"
-    tools:context="com.finalproject.youcef.bobo.LoginActivity">
+    android:background="#90A4AE"
+    tools:context="com.finalproject.youcef.bobo.RegisterActivity">
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -14,20 +14,20 @@
         android:gravity="center"
         android:padding="@dimen/activity_horizontal_margin">
 
-    <ImageView
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_margin="30dp"
-        android:src="@mipmap/ic_launcher"
-        android:layout_gravity="center_horizontal"
-        android:id="@+id/loginLogo" />
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_margin="30dp"
+            android:src="@mipmap/ic_launcher"
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/regLogo" />
 
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="#ffffff"
-            android:id="@+id/emailInput"
-            android:hint="Email"
+            android:id="@+id/addEmail"
+            android:hint="Add Email"
             android:textColorHint="#ffffff"
             android:layout_marginBottom="12dp"/>
 
@@ -35,28 +35,29 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="#ffffff"
-            android:id="@+id/passInput"
-            android:hint="Enter Password"
+            android:id="@+id/createPass"
+            android:hint="Create Password"
             android:textColorHint="@color/tw__composer_white"
             android:layout_marginBottom="12dp"/>
 
         <Button
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/loginBtn"
-        android:background="@color/colorAccent"
-        android:text="Login"
-        android:layout_marginTop="18dp"/>
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/regBtn"
+            android:background="@color/colorPrimary"
+            android:text="Register"
+            android:textColor="#B0BEC5"
+            android:layout_marginTop="18dp"/>
 
-    <Button
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/signupBtn"
-        android:text="Click here to Signup"
-        android:textColor="#ffffff"
-        android:textSize="16dp"
-        android:background="@null"
-        android:layout_marginTop="18dp" />
+        <Button
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/alreadyRegBtn"
+            android:text="Click here if already registered"
+            android:textColor="#ffffff"
+            android:textSize="16dp"
+            android:background="@null"
+            android:layout_marginTop="18dp" />
 
         <ProgressBar
             android:id="@+id/progressBar"

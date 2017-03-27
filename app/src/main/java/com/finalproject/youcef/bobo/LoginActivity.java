@@ -5,4 +5,6 @@ package com.finalproject.youcef.bobo;
  */
 
 public class LoginActivity {
+
+
 }

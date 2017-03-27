@@ -8,4 +8,10 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="AppTheme.NoBarTitle">                  //This is used to remove Action Bar + title
+                                                        //from the login and signup screens
+        <item name="windowActionBar">false</item>       //called from the AndroidManifest
+        <item name="windowNoTitle">true</item>
+    </style>
+
 </resources>
