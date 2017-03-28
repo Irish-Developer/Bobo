@@ -11,7 +11,7 @@
 
         <activity
                     android:theme="@style/AppTheme.NoBarTitle"
-                    android:name=".RegisterActivity">
+                    android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -21,7 +21,7 @@
 
         <activity
             android:theme="@style/AppTheme.NoBarTitle"
-            android:name=".LoginActivity">
+            android:name=".RegisterActivity">
 
         </activity>
 

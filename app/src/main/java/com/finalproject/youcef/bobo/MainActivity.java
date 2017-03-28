@@ -53,6 +53,7 @@ MainActivity extends AppCompatActivity implements ValueEventListener, ChildEvent
     private TextView taxiFname, taxiLname, licenseNum, taxiLexp, taxiRegNum, taxiFname2;
 //    final Context context = this;
 
+
     //////////using classes from the FirebaseDatabase API //////////
     //////////These are Firebase instance variables //////////
 
@@ -61,7 +62,7 @@ MainActivity extends AppCompatActivity implements ValueEventListener, ChildEvent
     //DatabaseReference object is a class that references a specific part of the database
     private DatabaseReference mTaxiDatabaseReference;
     //Authentication Instance variables
-    private FirebaseAuth mFirebaseAuth;
+    private FirebaseAuth fireAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     //read from the taxi node on the database
     private ChildEventListener mChildEventListener;
@@ -77,7 +78,7 @@ MainActivity extends AppCompatActivity implements ValueEventListener, ChildEvent
         setContentView(R.layout.activity_main);
 
         mFirebaseDatabase = FirebaseDatabase.getInstance();
-        mFirebaseAuth = FirebaseAuth.getInstance();
+        fireAuth = FirebaseAuth.getInstance();
 
         mTaxiDatabaseReference = mFirebaseDatabase.getReference().child("taxi_data2");
 
@@ -147,72 +148,89 @@ MainActivity extends AppCompatActivity implements ValueEventListener, ChildEvent
 
         });
 
-        mAuthStateListener = new FirebaseAuth.AuthStateListener(){
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth){
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null){
-                    //user is signed in
-                    Toast.makeText(MainActivity.this, "You are now signed in. Welcome!", Toast.LENGTH_SHORT).show();
-//                    onSignedIInitialize(user.getDisplayName());
-                } else {
-                    //user is not signed in
-//                    onSignedOutCleanup();
-                    startActivityForResult(
-                            AuthUI.getInstance()
-                                    .createSignInIntentBuilder()
-                                    .setIsSmartLockEnabled(false)
-                                    .setProviders(
-                                            AuthUI.EMAIL_PROVIDER,
-                                            AuthUI.GOOGLE_PROVIDER)
-                                    .build(),
-                            RC_SIGN_IN);
-                }
+//        mAuthStateListener = new FirebaseAuth.AuthStateListener(){
+//            @Override
+//            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth){
+//                FirebaseUser user = firebaseAuth.getCurrentUser();
+//                if (user != null){
+//                    //user is signed in
+//                    Toast.makeText(MainActivity.this, "You are now signed in. Welcome!", Toast.LENGTH_SHORT).show();
+////                    onSignedIInitialize(user.getDisplayName());
+//                } else {
+//                    //user is not signed in
+////                    onSignedOutCleanup();
+//                    startActivityForResult(
+//                            AuthUI.getInstance()
+//                                    .createSignInIntentBuilder()
+//                                    .setIsSmartLockEnabled(false)
+//                                    .setProviders(
+//                                            AuthUI.EMAIL_PROVIDER,
+//                                            AuthUI.GOOGLE_PROVIDER)
+//                                    .build(),
+//                            RC_SIGN_IN);
+//                }
+//
+//            }
+//        };
 
+        //get current user------ need this to get user and user details
+        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+
+        // this listener will be called when there is change in firebase user session - https://firebase.google.com/docs/auth/android/password-auth
+        mAuthStateListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user == null) {                                                             //User is signed in
+                    Log.d("MyTag", "onAuthStateChanged:signed_in:" + user.getUid());
+                    startActivity(new Intent(MainActivity.this, LoginActivity.class));          //User is signed out
+                    Log.d("MyTag", "onAuthStateChanged:signed_out");
+                    finish();
+                }
             }
         };
-
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == RC_SIGN_IN){
-            if (requestCode == RESULT_OK){
-                Toast.makeText(this, "Signed in!", Toast.LENGTH_SHORT).show();
-            }else if (requestCode == RESULT_CANCELED){
-                Toast.makeText(this, "Sign in Canceled", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
+//    @Override
+//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//        if(requestCode == RC_SIGN_IN){
+//            if (requestCode == RESULT_OK){
+//                Toast.makeText(this, "Signed in!", Toast.LENGTH_SHORT).show();
+//            }else if (requestCode == RESULT_CANCELED){
+//                Toast.makeText(this, "Sign in Canceled", Toast.LENGTH_SHORT).show();
+//            }
+//        }
+//    }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.bobo_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.sign_out_option:
-                //Sign out
-                AuthUI.getInstance().signOut(this);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    //this pauses the login procedure at the launch (if user is already logged in)
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (mAuthStateListener != null){
-            mFirebaseAuth.removeAuthStateListener(mAuthStateListener);
-        }
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        MenuInflater inflater = getMenuInflater();
+//        inflater.inflate(R.menu.bobo_menu, menu);
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        switch (item.getItemId()) {
+//            case R.id.sign_out_option:
+//                //Sign out
+//                AuthUI.getInstance().signOut(this);
+//                return true;
+//            default:
+//                return super.onOptionsItemSelected(item);
+//        }
+//    }
+//
+//    //this pauses the login procedure at the launch (if user is already logged in)
+//    @Override
+//    protected void onPause() {
+//        super.onPause();
+//        if (mAuthStateListener != null){
+//            mFirebaseAuth.removeAuthStateListener(mAuthStateListener);
+//        }
+//    }
 
 
 
@@ -296,4 +314,47 @@ MainActivity extends AppCompatActivity implements ValueEventListener, ChildEvent
 //    }
 //5
 //    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.bobo_menu, menu);
+        return true;
+    }
+
+    //sign out method
+    public void signOut() {
+        fireAuth.signOut();
+        Log.d("myTag","SignOut activated");
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        fireAuth.addAuthStateListener(mAuthStateListener);
+        Log.d("myTag","onStart "+ mAuthStateListener);
+    }
+
+    @Override
+    public void onStop() {
+        Log.d("myTag","Start onStop method");
+        super.onStop();
+        if (mAuthStateListener != null) {
+            fireAuth.removeAuthStateListener(mAuthStateListener);
+            Log.d("myTag","onStop ");
+        }
+    }
+
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.sign_out_option:
+                //Sign out
+                signOut();
+                Log.d("myTag","Sign out");
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 }

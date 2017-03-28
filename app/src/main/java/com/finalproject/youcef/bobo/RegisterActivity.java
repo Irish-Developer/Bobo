@@ -18,7 +18,10 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
 /**
- * Created by Youcef on 12/02/2017.
+ * Name: Youcef O'Connor
+ * Number:x13114557
+ * Date: 14 Feb 2017
+ * Registration Page.
  *
  */
 
@@ -45,7 +48,8 @@ public class RegisterActivity extends AppCompatActivity {
         loginLink.setOnClickListener(new View.OnClickListener() {           //when the login link is press, the user is taken to the login screen
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+            finish();
+                Log.d("myTag","login link");
             }
         });
 

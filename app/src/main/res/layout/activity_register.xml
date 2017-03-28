@@ -29,7 +29,8 @@
             android:id="@+id/addEmail"
             android:hint="Add Email"
             android:textColorHint="#ffffff"
-            android:layout_marginBottom="12dp"/>
+            android:layout_marginBottom="12dp"
+            android:inputType="textEmailAddress" />
 
         <EditText
             android:layout_width="match_parent"
@@ -38,7 +39,8 @@
             android:id="@+id/createPass"
             android:hint="Create Password"
             android:textColorHint="@color/tw__composer_white"
-            android:layout_marginBottom="12dp"/>
+            android:layout_marginBottom="12dp"
+            android:inputType="textPassword" />
 
         <Button
             android:layout_width="fill_parent"
