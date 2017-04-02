@@ -10,23 +10,38 @@
         android:theme="@style/AppTheme">
 
         <activity
-                    android:theme="@style/AppTheme.NoBarTitle"
-                    android:name=".LoginActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            android:theme="@style/AppTheme.NoBarTitle"
+            android:name=".FormActivity"
+            android:screenOrientation="portrait">
+                <intent-filter>
+                    <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+                    <category android:name="android.intent.category.LAUNCHER" />
+                </intent-filter>
         </activity>
 
         <activity
             android:theme="@style/AppTheme.NoBarTitle"
-            android:name=".RegisterActivity">
+            android:name=".RegisterActivity"
+            android:screenOrientation="portrait">
 
         </activity>
 
         <activity
-            android:name=".MainActivity">
+            android:name=".MainActivity"
+            android:screenOrientation="portrait">
+
+        </activity>
+
+        <activity
+            android:name=".LoginActivity"
+            android:screenOrientation="portrait">
+
+        </activity>
+
+        <activity
+            android:name=".ContactsActivity"
+            android:screenOrientation="portrait">
 
         </activity>
 

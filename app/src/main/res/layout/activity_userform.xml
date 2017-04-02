@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:layout_width="200dp"
+        android:layout_height="45sp"
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:layout_marginLeft="25dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="15dp"
+        android:id="@+id/secName"
+        android:hint="Second Name"
+        android:layout_below="@+id/firstName"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:background="@layout/edit_text_border"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"/>
+
+    <EditText
+        android:layout_width="50dp"
+        android:layout_height="45sp"
+        android:inputType="number"
+        android:hint="Age"
+        android:ems="10"
+        android:id="@+id/editText4"
+        android:background="@layout/edit_text_border"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:layout_alignBottom="@+id/firstName"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="53dp"
+        android:layout_marginEnd="53dp" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="45sp"
+        android:ems="10"
+        android:layout_below="@+id/emerConName"
+        android:layout_alignLeft="@+id/emerConName"
+        android:layout_alignStart="@+id/emerConName"
+        android:layout_marginTop="15dp"
+        android:id="@+id/emerConEmail"
+        android:hint="Emergency Contact Email"
+        android:inputType="textEmailAddress"
+        android:background="@layout/edit_text_border"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:layout_marginRight="25dp"/>
+
+    <TextView
+        android:text="Please enter emergency contact details below."
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:id="@+id/textView9"
+        android:layout_below="@+id/secName"
+        android:layout_centerHorizontal="true" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="45sp"
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:id="@+id/emerConName"
+        android:hint="Emergency Contact Name"
+        android:background="@layout/edit_text_border"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:layout_centerVertical="true"
+        android:layout_alignLeft="@+id/secName"
+        android:layout_alignStart="@+id/secName"
+        android:layout_marginRight="25dp"/>
+
+    <EditText
+        android:layout_width="200dp"
+        android:layout_height="45sp"
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:id="@+id/firstName"
+        android:layout_marginTop="29dp"
+        android:hint="First Name"
+        android:background="@layout/edit_text_border"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:layout_below="@+id/textView5"
+        android:layout_alignLeft="@+id/secName"
+        android:layout_alignStart="@+id/secName" />
+
+    <Button
+        android:text="Continue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/continueBtn"
+        android:layout_below="@+id/emerConEmail"
+        android:layout_alignLeft="@+id/emerConEmail"
+        android:layout_alignStart="@+id/emerConEmail"
+        android:layout_marginTop="49dp"
+        android:layout_alignRight="@+id/emerConEmail"
+        android:layout_alignEnd="@+id/emerConEmail"
+        android:textColor="@color/authui_inputTextColor"
+        android:background="@color/colorPrimary" />
+
+    <TextView
+        android:text="Please enter your details in the fields below"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="52dp"
+        android:id="@+id/textView5"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+</RelativeLayout>
