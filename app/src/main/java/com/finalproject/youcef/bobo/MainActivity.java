@@ -174,7 +174,7 @@ MainActivity extends AppCompatActivity implements ValueEventListener, ChildEvent
 //        };
 
         //get current user------ need this to get user and user details
-        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+//        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
 
         // this listener will be called when there is change in firebase user session - https://firebase.google.com/docs/auth/android/password-auth
@@ -183,7 +183,7 @@ MainActivity extends AppCompatActivity implements ValueEventListener, ChildEvent
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user == null) {                                                             //User is signed in
-                    Log.d("MyTag", "onAuthStateChanged:signed_in:" + user.getUid());
+                    Log.d("MyTag", "onAuthStateChanged:signed_in:");
                     startActivity(new Intent(MainActivity.this, LoginActivity.class));          //User is signed out
                     Log.d("MyTag", "onAuthStateChanged:signed_out");
                     finish();
