@@ -47,7 +47,6 @@ MainActivity extends AppCompatActivity implements ValueEventListener, ChildEvent
     public static final int RC_SIGN_IN = 1; //RC stands for Request Code
 
     private Button mCheckButton;
-    private String mUsername;
     private EditText taxireg;
     private ProgressBar progressBar;
     private TextView taxiFname, taxiLname, licenseNum, taxiLexp, taxiRegNum, taxiFname2;
@@ -80,7 +79,7 @@ MainActivity extends AppCompatActivity implements ValueEventListener, ChildEvent
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         fireAuth = FirebaseAuth.getInstance();
 
-        mTaxiDatabaseReference = mFirebaseDatabase.getReference().child("taxi_data2");
+        mTaxiDatabaseReference = mFirebaseDatabase.getReference().child("taxi_data").child("taxi_details");
 
         //Retrieving values from edit text & button
         taxireg = (EditText) findViewById(R.id.checkTF);
@@ -103,7 +102,7 @@ MainActivity extends AppCompatActivity implements ValueEventListener, ChildEvent
 //                // Get the layout inflater
 //                LayoutInflater inflater = getLayoutInflater();
 
-                String taxi_detail = taxireg.getText().toString();
+                String taxi_detail = taxireg.getText().toString().trim();
                 Query a = mTaxiDatabaseReference.orderByChild("car_reg").equalTo(taxi_detail);
                 Log.d("myTag","car reg"+mTaxiDatabaseReference);
                 Query b = mTaxiDatabaseReference.orderByChild("license_no").equalTo(taxi_detail); //new 24/02
