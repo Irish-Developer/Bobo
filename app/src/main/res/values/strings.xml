@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Bobo</string>
+    <string name="first_name">First Name</string>
+    <string name="age">Age</string>
+    <string name="second_name">Last Name</string>
+    <string name="continue1">Continue</string>
+    <string name="emergency_contact_email">Emergency Contact Email</string>
+    <string name="emergency_contact_name">Emergency Contact Name</string>
+    <string name="please_enter_emergency_contact_details_below">Please enter emergency contact details below.</string>
+    <string name="formText1">Please enter your details in the fields below</string>
 </resources>
