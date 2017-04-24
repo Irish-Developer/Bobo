@@ -71,6 +71,7 @@ public class FormActivity extends AppCompatActivity {
                 String eName = emerName.getText().toString().trim();
                 String eEmail = emerEmail.getText().toString().trim();
                 String age = age1.getText().toString().trim();
+                String ePattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
 
 
                 if (TextUtils.isEmpty(firstName)) {
@@ -97,6 +98,20 @@ public class FormActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "Add your emergency contacts email", Toast.LENGTH_SHORT).show();
                     return;
                 }
+
+                // onClick of button perform this simplest code.
+                if (eEmail.matches(ePattern))
+                {
+                    Log.d("myTag","valid Email Address " + eEmail);
+//                    Toast.makeText(getApplicationContext(),"valid email address",Toast.LENGTH_SHORT).show();
+                }
+                else
+                {
+                    Log.d("myTag","Invalid Email Address " + eEmail);
+                    Toast.makeText(getApplicationContext(),"Invalid email address", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 progressBar3.setVisibility(View.VISIBLE);
 
 
@@ -126,6 +141,7 @@ public class FormActivity extends AppCompatActivity {
                             Toast.makeText(FormActivity.this, "Data update failed", Toast.LENGTH_SHORT).show();
                         } else {
                             startActivity(new Intent(FormActivity.this, MainActivity.class));
+                            Toast.makeText(FormActivity.this, "Welcome to Bobo!", Toast.LENGTH_SHORT).show();
                             Log.d("MyTag","database works!");
                             finish();
                         }

@@ -17,6 +17,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.io.Serializable;
+import java.lang.Object;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+
 /**
  * Name: Youcef O'Connor
  * Number:x13114557
@@ -25,7 +30,7 @@ import com.google.firebase.auth.FirebaseAuth;
  *
  */
 
-public class RegisterActivity extends AppCompatActivity {
+public class RegisterActivity extends AppCompatActivity implements Serializable {
 
     private EditText pass, email;
     private ProgressBar progressBar2;
@@ -88,7 +93,7 @@ public class RegisterActivity extends AppCompatActivity {
                         progressBar2.setVisibility(View.GONE);                  //Stop running the progressbar
 
                         if (!task.isSuccessful()) {
-                            Toast.makeText(RegisterActivity.this, "Registration failed" + task.getException(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(RegisterActivity.this, "Registration failed!", Toast.LENGTH_SHORT).show();
                         } else {
                             startActivity(new Intent(RegisterActivity.this, FormActivity.class));
                             finish();

@@ -39,7 +39,7 @@
         android:textColor="@android:color/background_light" />
 
     <TextView
-        android:text="Taxi Vallidation"
+        android:text="Taxi Validation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/textView"
