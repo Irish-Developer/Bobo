@@ -11,7 +11,7 @@
 
         <activity
             android:theme="@style/AppTheme.NoBarTitle"
-            android:name=".LoginActivity"
+            android:name=".FormActivity"
             android:screenOrientation="portrait">
                 <intent-filter>
                     <action android:name="android.intent.action.MAIN" />
@@ -34,7 +34,7 @@
         </activity>
 
         <activity
-            android:name=".FormActivity"
+            android:name=".LoginActivity"
             android:screenOrientation="portrait">
 
         </activity>

@@ -1,5 +1,14 @@
 package com.finalproject.youcef.bobo;
 
+/**************************************************************************************************************************
+ * References for regular expression:
+ *
+ * Email:       @uthor= Rahul Baradia | Website= StackOverflow | URL= http://stackoverflow.com/questions/12947620/email-address-validation-in-android-on-edittext
+ * Password:    @uthor= | Website= | URL=
+ * Date:        @uthor= Dany Lauener | Website=Regular Expression Language | URL= http://www.regexlib.com/(A(c6LgOXWtNZyRBnekhSOqOgnJA18Zo2E_NhvTCKNFATD_7vm7lCwOZdwdgLJJKu8h5Lyt9oTP6411PFuAU97m_19qgpxizUCI8NU8d5YTuFE0f8ngkDsNSfTsPVPunrUomyUI-a3qwL_ihigV1lZ_8wQ_BQ-uRacmKbtG-hIoj_9jua-luv5s64SbyjML5Qot0))/DisplayPatterns.aspx?cattabindex=5&categoryId=5
+ *
+ *******************************************************************************************************************************/
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -22,14 +31,14 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.twitter.sdk.android.core.models.User;
 
 import java.lang.ref.Reference;
-
+// Email regular expression:
 /**
  * Created by Youcef on 02/03/2017.
  */
 
 public class FormActivity extends AppCompatActivity {
 
-    private EditText fname, lname, age1, emerName, emerEmail;
+    private EditText fname, lname, dobDay, dobMonth, dobYear, emerName, emerEmail;
     private ProgressBar progressBar3;
     private Button continBtn;
     private DatabaseReference mDatabaseRef;
@@ -57,22 +66,26 @@ public class FormActivity extends AppCompatActivity {
         lname = (EditText) findViewById(R.id.lastName);
         emerName = (EditText) findViewById(R.id.emerConName);
         emerEmail = (EditText) findViewById(R.id.emerConEmail);
-        age1 = (EditText) findViewById(R.id.ageET);
+        dobDay = (EditText) findViewById(R.id.day);
+        dobMonth = (EditText) findViewById(R.id.month);
+        dobYear = (EditText) findViewById(R.id.year);
         continBtn = (Button) findViewById(R.id.continueBtn);
         progressBar3 = (ProgressBar) findViewById(R.id.progressBar3);
 
-
+        // When the continue button is pressed
         continBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
+                //Declare user inputs to variables
                 String firstName = fname.getText().toString().trim();
                 String lastName = lname.getText().toString().trim();
                 String eName = emerName.getText().toString().trim();
                 String eEmail = emerEmail.getText().toString().trim();
-                String age = age1.getText().toString().trim();
                 String ePattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
-
+                String day = dobDay.getText().toString().trim();
+                String month = dobMonth.getText().toString().trim();
+                String year = dobYear.getText().toString().trim();
 
                 if (TextUtils.isEmpty(firstName)) {
                     Toast.makeText(getApplicationContext(), "Add your first name", Toast.LENGTH_SHORT).show();
@@ -84,8 +97,18 @@ public class FormActivity extends AppCompatActivity {
                     return;
                 }
 
-                if (TextUtils.isEmpty(age)) {
-                    Toast.makeText(getApplicationContext(), "Add your age", Toast.LENGTH_SHORT).show();
+                if (TextUtils.isEmpty(day)) {
+                    Toast.makeText(getApplicationContext(), "Date of Birth is invalid", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (TextUtils.isEmpty(month)) {
+                    Toast.makeText(getApplicationContext(), "Date of Birth is invalid", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (TextUtils.isEmpty(year)) {
+                    Toast.makeText(getApplicationContext(), "Date of Birth is invalid", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -121,8 +144,14 @@ public class FormActivity extends AppCompatActivity {
                 if (!TextUtils.isEmpty(eName))
                     mDatabaseRef.child(userId).child("contacts").child("emerName").setValue(eName);
 
-                if (!TextUtils.isEmpty(age))
-                    mDatabaseRef.child(userId).child("age").setValue(age);
+                if (!TextUtils.isEmpty(day))
+                    mDatabaseRef.child(userId).child("dob").child("dobDay").setValue(day);
+
+                if (!TextUtils.isEmpty(day))
+                    mDatabaseRef.child(userId).child("dob").child("dobMonth").setValue(month);
+
+                if (!TextUtils.isEmpty(day))
+                    mDatabaseRef.child(userId).child("dob").child("dobYear").setValue(year);
 
                 if (!TextUtils.isEmpty(lastName))
                     mDatabaseRef.child(userId).child("lname").setValue(lastName);
