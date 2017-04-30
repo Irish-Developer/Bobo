@@ -42,6 +42,12 @@
             android:layout_marginBottom="12dp"
             android:inputType="textPassword" />
 
+        <TextView
+            android:id="@+id/textView11"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Password has to have One Number, One Uppercase Letter , One  Lowercase Letter and a minimum of 8 characters." />
+
         <Button
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"

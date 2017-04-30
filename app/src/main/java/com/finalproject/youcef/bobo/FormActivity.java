@@ -4,7 +4,6 @@ package com.finalproject.youcef.bobo;
  * References for regular expression:
  *
  * Email:       @uthor= Rahul Baradia | Website= StackOverflow | URL= http://stackoverflow.com/questions/12947620/email-address-validation-in-android-on-edittext
- * Password:    @uthor= | Website= | URL=
  * Date:        @uthor= Dany Lauener | Website=Regular Expression Language | URL= http://www.regexlib.com/(A(c6LgOXWtNZyRBnekhSOqOgnJA18Zo2E_NhvTCKNFATD_7vm7lCwOZdwdgLJJKu8h5Lyt9oTP6411PFuAU97m_19qgpxizUCI8NU8d5YTuFE0f8ngkDsNSfTsPVPunrUomyUI-a3qwL_ihigV1lZ_8wQ_BQ-uRacmKbtG-hIoj_9jua-luv5s64SbyjML5Qot0))/DisplayPatterns.aspx?cattabindex=5&categoryId=5
  *
  *******************************************************************************************************************************/
@@ -86,6 +85,13 @@ public class FormActivity extends AppCompatActivity {
                 String day = dobDay.getText().toString().trim();
                 String month = dobMonth.getText().toString().trim();
                 String year = dobYear.getText().toString().trim();
+                String dobPattern = "^(((0[1-9]|[12]\\d|3[01])\\/(0[13578]|1[02])\\/((1[6-9]|[2-9]\\d)\\d{2}))|((0[1-9]|[12]\\d|30)\\/(0[13456789]|1[012])\\/((1[6-9]|[2-9]\\d)\\d{2}))|((0[1-9]|1\\d|2[0-8])\\/02\\/((1[6-9]|[2-9]\\d)\\d{2}))|(29\\/02\\/((1[6-9]|[2-9]\\d)(0[48]|[2468][048]|[13579][26])|((16|[2468][048]|[3579][26])00))))$";
+
+                //Here I am putting the dob input together into a String like this dd/mm/yy
+                //Then I am going to check it with the dobPattern to make sure it's a valid dob
+                String tempDob = (day + "/" + month + "/" + year);
+                Log.d("myTag","Temp Dob " +tempDob);
+
 
                 if (TextUtils.isEmpty(firstName)) {
                     Toast.makeText(getApplicationContext(), "Add your first name", Toast.LENGTH_SHORT).show();
@@ -122,7 +128,7 @@ public class FormActivity extends AppCompatActivity {
                     return;
                 }
 
-                // onClick of button perform this simplest code.
+                // Checks the pattern of the email address
                 if (eEmail.matches(ePattern))
                 {
                     Log.d("myTag","valid Email Address " + eEmail);
@@ -132,6 +138,18 @@ public class FormActivity extends AppCompatActivity {
                 {
                     Log.d("myTag","Invalid Email Address " + eEmail);
                     Toast.makeText(getApplicationContext(),"Invalid email address", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                //Checks the pattern of dob
+                if (tempDob.matches(dobPattern))
+                {
+                    Log.d("myTag","valid Date of Birth " + tempDob);
+                }
+                else
+                {
+                    Log.d("myTag","Invalid dob " + tempDob);
+                    Toast.makeText(getApplicationContext(),"Invalid Date of Birth", Toast.LENGTH_SHORT).show();
                     return;
                 }
 

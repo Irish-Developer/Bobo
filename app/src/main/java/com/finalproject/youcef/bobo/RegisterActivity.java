@@ -1,5 +1,13 @@
 package com.finalproject.youcef.bobo;
 
+/**************************************************************************************************************************
+ * References for regular expression:
+ *
+ * Password:    @uthor=mkyong | Website= MKYONG | Web page= How to validate password with regular expression | URL=https://www.mkyong.com/regular-expressions/how-to-validate-password-with-regular-expression/
+ *
+ *******************************************************************************************************************************/
+
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -18,9 +26,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.io.Serializable;
-import java.lang.Object;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
+
 
 /**
  * Name: Youcef O'Connor
@@ -50,6 +56,7 @@ public class RegisterActivity extends AppCompatActivity implements Serializable 
         loginLink = (Button) findViewById(R.id.alreadyRegBtn);
         signupBtn = (Button) findViewById(R.id.regBtn);
 
+
         loginLink.setOnClickListener(new View.OnClickListener() {           //when the login link is press, the user is taken to the login screen
             @Override
             public void onClick(View v) {
@@ -64,6 +71,7 @@ public class RegisterActivity extends AppCompatActivity implements Serializable 
 
                 final String password = pass.getText().toString().trim();
                 final String addEmail = email.getText().toString().trim();
+                String passPattern = "((?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{8,30})";
 
                 if (TextUtils.isEmpty(password)) {
                     Toast.makeText(getApplicationContext(), "Create password", Toast.LENGTH_SHORT).show();
@@ -75,10 +83,24 @@ public class RegisterActivity extends AppCompatActivity implements Serializable 
                     return;
                 }
 
+                //Checks the pattern of the password
+                if (password.matches(passPattern))
+                {
+                    Log.d("myTag","valid Password " + password);
+                }
+                else
+                {
+                    Log.d("myTag","Invalid password " + password);
+                    Toast.makeText(getApplicationContext(),"Invalid Password", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 if (TextUtils.isEmpty(addEmail)) {
                     Toast.makeText(getApplicationContext(), "Add Email address", Toast.LENGTH_SHORT).show();
                     return;
                 }
+
+
 
                 //When the entered details have met the standard, create user
                 //Display progress bar while creating user until auth result has returned

@@ -96,12 +96,6 @@ MainActivity extends AppCompatActivity implements ValueEventListener, ChildEvent
             @Override
             public void onClick(View v){
 
-//                AlertDialog.Builder builder = new AlertDialog.Builder(context); // Declare new Alert Dialog
-//                Log.d("myTab","declare new AlertDialog");
-//
-//                // Get the layout inflater
-//                LayoutInflater inflater = getLayoutInflater();
-
                 String taxi_detail = taxireg.getText().toString().trim();
                 Query a = mTaxiDatabaseReference.orderByChild("car_reg").equalTo(taxi_detail);
                 Log.d("myTag","car reg"+mTaxiDatabaseReference);
@@ -111,66 +105,10 @@ MainActivity extends AppCompatActivity implements ValueEventListener, ChildEvent
                 b.addChildEventListener(MainActivity.this); //adds license number query to
 
 
-//                builder.setView(inflater.inflate(R.layout.driver_details, null));
-//                taxiFname2 = (TextView) findViewById(R.id.textView8);
-
-                // set title
-//                builder.setTitle("Your Title");
-
-                // set dialog message
-//                Builder
-//                        .setMessage("Click yes to exit!")
-//                        .setCancelable(false)
-//                        .setPositiveButton("Yes",new DialogInterface.OnClickListener() {
-//                            public void onClick(DialogInterface dialog,int id) {
-//                                // if this button is clicked, close
-//                                // current activity
-//                                MainActivity.this.finish();
-//                            }
-//                        })
-//                        .setNegativeButton("No",new DialogInterface.OnClickListener() {
-//                            public void onClick(DialogInterface dialog,int id) {
-//                                // if this button is clicked, just close
-//                                // the dialog box and do nothing
-//                                dialog.cancel();
-//                            }
-//                        });
-
-//                // create alert dialog
-//                AlertDialog alertDialog = builder.create();
-//
-//                // show it
-//                alertDialog.show();
-
 
             }
 
         });
-
-//        mAuthStateListener = new FirebaseAuth.AuthStateListener(){
-//            @Override
-//            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth){
-//                FirebaseUser user = firebaseAuth.getCurrentUser();
-//                if (user != null){
-//                    //user is signed in
-//                    Toast.makeText(MainActivity.this, "You are now signed in. Welcome!", Toast.LENGTH_SHORT).show();
-////                    onSignedIInitialize(user.getDisplayName());
-//                } else {
-//                    //user is not signed in
-////                    onSignedOutCleanup();
-//                    startActivityForResult(
-//                            AuthUI.getInstance()
-//                                    .createSignInIntentBuilder()
-//                                    .setIsSmartLockEnabled(false)
-//                                    .setProviders(
-//                                            AuthUI.EMAIL_PROVIDER,
-//                                            AuthUI.GOOGLE_PROVIDER)
-//                                    .build(),
-//                            RC_SIGN_IN);
-//                }
-//
-//            }
-//        };
 
         //get current user------ need this to get user and user details
 //        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -191,74 +129,6 @@ MainActivity extends AppCompatActivity implements ValueEventListener, ChildEvent
         };
     }
 
-//    @Override
-//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//        if(requestCode == RC_SIGN_IN){
-//            if (requestCode == RESULT_OK){
-//                Toast.makeText(this, "Signed in!", Toast.LENGTH_SHORT).show();
-//            }else if (requestCode == RESULT_CANCELED){
-//                Toast.makeText(this, "Sign in Canceled", Toast.LENGTH_SHORT).show();
-//            }
-//        }
-//    }
-
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        MenuInflater inflater = getMenuInflater();
-//        inflater.inflate(R.menu.bobo_menu, menu);
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        switch (item.getItemId()) {
-//            case R.id.sign_out_option:
-//                //Sign out
-//                AuthUI.getInstance().signOut(this);
-//                return true;
-//            default:
-//                return super.onOptionsItemSelected(item);
-//        }
-//    }
-//
-//    //this pauses the login procedure at the launch (if user is already logged in)
-//    @Override
-//    protected void onPause() {
-//        super.onPause();
-//        if (mAuthStateListener != null){
-//            mFirebaseAuth.removeAuthStateListener(mAuthStateListener);
-//        }
-//    }
-
-
-
-
-
-
-//    @Override
-//    public Dialog onClickDialog(Bundle savedInstanceState) {
-//        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-//        // Get the layout inflater
-//        LayoutInflater inflater = getActivity().getLayoutInflater();
-//
-//        // Inflate and set the layout for the dialog
-//        // Pass null as the parent view because its going in the dialog layout
-//        builder.setView(inflater.inflate(R.layout.driver_details, null))
-//                // Add action buttons
-//                .setPositiveButton(R.string.signin, new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int id) {
-//                        // sign in the user ...
-//                    }
-//                })
-//                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-//                    public void onClick(DialogInterface dialog, int id) {
-//                        LoginDialogFragment.this.getDialog().cancel();
-//                    }
-//                });
-//        return builder.create();
-//    }
 
     @Override
     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -311,7 +181,7 @@ MainActivity extends AppCompatActivity implements ValueEventListener, ChildEvent
 //            Toast.makeText(MainActivity.this , "Taxi is Registered", Toast.LENGTH_LONG).show();
 //        }
 //    }
-//5
+//
 //    }
 
     @Override

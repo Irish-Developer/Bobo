@@ -80,7 +80,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 progressBar.setVisibility(View.VISIBLE);                                                            //When the email & password have been entered and the Login button has been pressed, display progress bar
 
-                //Check the user in put with FirebaseAuth to authenticate user
+                //Check the user input with FirebaseAuth to authenticate user
                 fireAuth.signInWithEmailAndPassword(emailInput, password).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
