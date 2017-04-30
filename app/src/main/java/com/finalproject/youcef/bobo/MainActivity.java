@@ -41,7 +41,7 @@ import com.google.firebase.database.ValueEventListener;
 
 public class
 
-MainActivity extends AppCompatActivity implements ValueEventListener, ChildEventListener {
+MainActivity extends AppCompatActivity{
 
     public static final int DEFAULT_INPUT_LIMIT = 12;
     public static final int RC_SIGN_IN = 1; //RC stands for Request Code
@@ -79,7 +79,6 @@ MainActivity extends AppCompatActivity implements ValueEventListener, ChildEvent
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         fireAuth = FirebaseAuth.getInstance();
 
-        mTaxiDatabaseReference = mFirebaseDatabase.getReference().child("taxi_data").child("taxi_details");
 
         //Retrieving values from edit text & button
         taxireg = (EditText) findViewById(R.id.checkTF);
@@ -89,6 +88,7 @@ MainActivity extends AppCompatActivity implements ValueEventListener, ChildEvent
         taxiLexp = (TextView) findViewById(R.id.textView6);
         taxiRegNum = (TextView) findViewById(R.id.textView7);
         mCheckButton = (Button) findViewById(R.id.button);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
 
         //Check button
@@ -96,15 +96,63 @@ MainActivity extends AppCompatActivity implements ValueEventListener, ChildEvent
             @Override
             public void onClick(View v){
 
+                mTaxiDatabaseReference = mFirebaseDatabase.getReference().child("taxi_data").child("taxi_details");
+
+                progressBar.setVisibility(View.VISIBLE);
+
+
                 String taxi_detail = taxireg.getText().toString().trim();
                 Query a = mTaxiDatabaseReference.orderByChild("car_reg").equalTo(taxi_detail);
                 Log.d("myTag","car reg"+mTaxiDatabaseReference);
                 Query b = mTaxiDatabaseReference.orderByChild("license_no").equalTo(taxi_detail); //new 24/02
+                Log.d("myTag", "Query " + b);
 
-                a.addChildEventListener(MainActivity.this);
-                b.addChildEventListener(MainActivity.this); //adds license number query to
+//                a.addChildEventListener(MainActivity.this);
+                b.addChildEventListener(new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                        if (dataSnapshot.exists()) {
+                            Map<String, Object> newPost = (Map<String, Object>) dataSnapshot.getValue();
+                            Log.d("myTag", "Map " + dataSnapshot);
+
+                            taxiFname.setText("First Name: " + newPost.get("first_name").toString());
+                            taxiLname.setText("Last Name: " + newPost.get("last_name").toString());
+                            licenseNum.setText("License Number: " + newPost.get("license_no").toString());
+                            taxiLexp.setText("License Expiry Date : " + newPost.get("license_exp").toString());
+                            taxiRegNum.setText("Car Reg Number : " + newPost.get("car_reg").toString());
+
+                            progressBar.setVisibility(View.GONE);
 
 
+                        } else {
+                            Log.d("myTag", "No Taxi" + dataSnapshot);
+
+                            progressBar.setVisibility(View.GONE);
+
+                        }
+                    }
+                    
+                    @Override
+                    public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+                    }
+
+                    @Override
+                    public void onChildRemoved(DataSnapshot dataSnapshot) {
+                        progressBar.setVisibility(View.GONE);
+
+                    }
+
+                    @Override
+                    public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                }); //adds license number query t
 
             }
 
@@ -119,10 +167,10 @@ MainActivity extends AppCompatActivity implements ValueEventListener, ChildEvent
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user == null) {                                                             //User is signed in
-                    Log.d("MyTag", "onAuthStateChanged:signed_in:");
-                    startActivity(new Intent(MainActivity.this, LoginActivity.class));          //User is signed out
-                    Log.d("MyTag", "onAuthStateChanged:signed_out");
+                if (user == null) {                                                             //User is signed out
+                    Log.d("MyTag", "User session has ended");
+                    startActivity(new Intent(MainActivity.this, LoginActivity.class));          //Go to Login screen
+                    Log.d("MyTag", "Signing out user");
                     finish();
                 }
             }
@@ -130,43 +178,52 @@ MainActivity extends AppCompatActivity implements ValueEventListener, ChildEvent
     }
 
 
-    @Override
-    public void onDataChange(DataSnapshot dataSnapshot) {
-//        Toast.makeText(getApplicationContext(), dataSnapshot.toString(), Toast.LENGTH_LONG).show();
-    }
-
-    @Override
-    public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-        Map<String, Object> newPost = (Map<String, Object>) dataSnapshot.getValue();
-        Log.d("myTag","Map "+dataSnapshot);
-        taxiFname.setText("First Name: " + newPost.get("first_name").toString());
-        taxiLname.setText("Last Name: " + newPost.get("last_name").toString());
-        licenseNum.setText("License Number: " + newPost.get("license_no").toString());
-        taxiLexp.setText("License Expiry Date : " + newPost.get("license_exp").toString());
-        taxiRegNum.setText("Car Reg Number : " + newPost.get("car_reg").toString());
-
-    }
-
-    @Override
-    public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-    }
-
-    @Override
-    public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-    }
-
-    @Override
-    public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-    }
-
-    @Override
-    public void onCancelled(DatabaseError databaseError) {
-//        Log.e(TAG, "Failed to read user", error.toException());
-
-    }
+//    @Override
+//    public void onDataChange(DataSnapshot dataSnapshot) {
+////        Toast.makeText(getApplicationContext(), dataSnapshot.toString(), Toast.LENGTH_LONG).show();
+//    }
+//
+//
+//    @Override
+//    public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+//        if (dataSnapshot.getValue() != null) {
+//            Log.d("myTag","No Taxi");
+//
+//        }
+//        else{
+//
+//            Log.d("myTag", "Map " + dataSnapshot);
+//        Map<String, Object> newPost = (Map<String, Object>) dataSnapshot.getValue();
+//        Log.d("myTag", "Map " + dataSnapshot);
+//        taxiFname.setText("First Name: " + newPost.get("first_name").toString());
+//        taxiLname.setText("Last Name: " + newPost.get("last_name").toString());
+//        licenseNum.setText("License Number: " + newPost.get("license_no").toString());
+//        taxiLexp.setText("License Expiry Date : " + newPost.get("license_exp").toString());
+//        taxiRegNum.setText("Car Reg Number : " + newPost.get("car_reg").toString());}
+//    }
+//
+//    @Override
+//    public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+//        Log.d("myTag","onClickChanged "+dataSnapshot);
+//
+//    }
+//
+//    @Override
+//    public void onChildRemoved(DataSnapshot dataSnapshot) {
+//
+//    }
+//
+//    @Override
+//    public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+//
+//    }
+//
+//    @Override
+//    public void onCancelled(DatabaseError databaseError) {
+//        Log.w("myTag", "postComments:onCancelled", databaseError.toException());
+//        progressBar.setVisibility(View.GONE);
+//
+//    }
 
 //    public Class CheckTaxi extends AsyncTask<String,String,String>
 //    {
