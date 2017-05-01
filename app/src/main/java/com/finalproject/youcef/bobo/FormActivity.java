@@ -41,7 +41,7 @@ public class FormActivity extends AppCompatActivity {
     private ProgressBar progressBar3;
     private Button continBtn;
     private DatabaseReference mDatabaseRef;
-    private String userId;
+    private String contactsId, name;
     private FirebaseAuth auth;
     private String Uid;
 
@@ -57,7 +57,7 @@ public class FormActivity extends AppCompatActivity {
             Log.d("MyTag", "uid: " +Uid);
 
 
-        userId = mDatabaseRef.push().getKey();
+        contactsId = mDatabaseRef.push().getKey();
 //            Log.d("MyTag", "user id: " +userId);
 //        FirebaseDatabase = mDatabaseRef.getReference("users");
 
@@ -157,29 +157,29 @@ public class FormActivity extends AppCompatActivity {
 
 
                 if (!TextUtils.isEmpty(eEmail))
-                    mDatabaseRef.child(userId).child("contacts").child("emerEmail").setValue(eEmail);
+                    mDatabaseRef.child("contacts").child(contactsId).child("emerEmail").setValue(eEmail);
 
                 if (!TextUtils.isEmpty(eName))
-                    mDatabaseRef.child(userId).child("contacts").child("emerName").setValue(eName);
+                    mDatabaseRef.child("contacts").child(contactsId).child("emerName").setValue(eName);
 
                 if (!TextUtils.isEmpty(day))
-                    mDatabaseRef.child(userId).child("dob").child("dobDay").setValue(day);
+                    mDatabaseRef.child("dob").child("dobDay").setValue(day);
 
                 if (!TextUtils.isEmpty(day))
-                    mDatabaseRef.child(userId).child("dob").child("dobMonth").setValue(month);
+                    mDatabaseRef.child("dob").child("dobMonth").setValue(month);
 
                 if (!TextUtils.isEmpty(day))
-                    mDatabaseRef.child(userId).child("dob").child("dobYear").setValue(year);
+                    mDatabaseRef.child("dob").child("dobYear").setValue(year);
 
                 if (!TextUtils.isEmpty(lastName))
-                    mDatabaseRef.child(userId).child("lname").setValue(lastName);
+                    mDatabaseRef.child("name").child("lname").setValue(lastName);
 
 
                 if (!TextUtils.isEmpty(firstName))
                 Log.d("MyTag", "firstName");
 
                 //Confirmation from Firebase Realtime database of upload success
-                DatabaseReference dataRef = mDatabaseRef.child(userId).child("fname");
+                DatabaseReference dataRef = mDatabaseRef.child("name").child("fname");
                 dataRef.setValue(firstName, new DatabaseReference.CompletionListener() {
                     @Override
                     public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {

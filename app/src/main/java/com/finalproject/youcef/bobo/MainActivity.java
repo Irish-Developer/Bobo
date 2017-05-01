@@ -25,6 +25,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.Date;
+import java.text.SimpleDateFormat;
 import java.util.Map;
 
 import com.google.firebase.database.ChildEventListener;
@@ -50,8 +52,8 @@ MainActivity extends AppCompatActivity implements ValueEventListener, ChildEvent
     private EditText taxireg;
     private ProgressBar progressBar;
     private TextView taxiFname, taxiLname, licenseNum, taxiLexp, taxiRegNum, regOk, regNotOk, areYou;
-    private String userId, Uid, firstName, lastName;
-
+    private String historyId, Uid, firstName, lastName, lnumber, lexpirary, regNum,dateNow, timeNow;
+    private Date date, time;
 
 
 
@@ -87,8 +89,19 @@ MainActivity extends AppCompatActivity implements ValueEventListener, ChildEvent
         Log.d("myTag","FireAuth user ID" +Uid);
 
         userRef = FirebaseDatabase.getInstance().getReference("users").child(Uid);
-        userId = userRef.push().getKey();
+        historyId = userRef.push().getKey();
 
+        //Get the current date
+        date = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        dateNow = dateFormat.format(date);
+        Log.d("myTag","Current date: " + dateNow);
+
+        //Get the current date
+        time = new Date();
+        SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm:ss a");
+        timeNow = timeFormat.format(time);
+        Log.d("myTag","Current time: " + timeNow);
 
         //Retrieving values from edit text & button
         taxireg = (EditText) findViewById(R.id.checkTF);
@@ -179,6 +192,9 @@ MainActivity extends AppCompatActivity implements ValueEventListener, ChildEvent
         //Temporary store details so they be stored in history and brought over to next activity
         firstName = newPost.get("first_name").toString();
         lastName = newPost.get("last_name").toString();
+        lnumber = newPost.get("license_no").toString();
+        lexpirary = newPost.get("license_exp").toString();
+        regNum = newPost.get("car_reg").toString();
         Log.d("myTag","stored first name: " + firstName);
         Log.d("myTag","first name: " + newPost.get("first_name"));
         //Stops Progress bar
@@ -226,14 +242,21 @@ MainActivity extends AppCompatActivity implements ValueEventListener, ChildEvent
 
     //When the YES button is pressed
     public void yesBtn (View v){
+
+        //Storing taxi driver details to History table / node
         Log.d("myTag","Send to History "+firstName);
         Log.d("myTag","first name: " );
-        userRef.child(userId).child("history").child("driver_lname").setValue(lastName);
-        Log.d("myTag","Send to History");
+        userRef.child("history").child(historyId).child("driver_lname").setValue(lastName);
+        userRef.child("history").child(historyId).child("license_number").setValue(lnumber);
+        userRef.child("history").child(historyId).child("license_expDate").setValue(lexpirary);
+        userRef.child("history").child(historyId).child("reg_number").setValue(regNum);
 
+        userRef.child("history").child(historyId).child("date").setValue(dateNow);
+        userRef.child("history").child(historyId).child("time").setValue(timeNow);
+        Log.d("myTag","Sent to History");
 
         //Confirmation from Firebase Realtime database of upload success
-        DatabaseReference dataRef = userRef.child(userId).child("history").child("driver_fname");
+        DatabaseReference dataRef = userRef.child("history").child(historyId).child("driver_fname");
         dataRef.setValue(firstName, new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
