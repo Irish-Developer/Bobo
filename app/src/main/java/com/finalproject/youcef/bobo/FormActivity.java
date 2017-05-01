@@ -178,7 +178,7 @@ public class FormActivity extends AppCompatActivity {
                 if (!TextUtils.isEmpty(firstName))
                 Log.d("MyTag", "firstName");
 
-                //Confirmation that from Firebase Realtime database of upload success
+                //Confirmation from Firebase Realtime database of upload success
                 DatabaseReference dataRef = mDatabaseRef.child(userId).child("fname");
                 dataRef.setValue(firstName, new DatabaseReference.CompletionListener() {
                     @Override

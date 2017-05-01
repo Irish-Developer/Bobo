@@ -41,16 +41,18 @@ import com.google.firebase.database.ValueEventListener;
 
 public class
 
-MainActivity extends AppCompatActivity{
+MainActivity extends AppCompatActivity implements ValueEventListener, ChildEventListener {
 
     public static final int DEFAULT_INPUT_LIMIT = 12;
     public static final int RC_SIGN_IN = 1; //RC stands for Request Code
 
-    private Button mCheckButton;
+    private Button mCheckButton, noButton, yesButton;
     private EditText taxireg;
     private ProgressBar progressBar;
-    private TextView taxiFname, taxiLname, licenseNum, taxiLexp, taxiRegNum, taxiFname2;
-//    final Context context = this;
+    private TextView taxiFname, taxiLname, licenseNum, taxiLexp, taxiRegNum, regOk, regNotOk, areYou;
+    private String userId, Uid, firstName, lastName;
+
+
 
 
     //////////using classes from the FirebaseDatabase API //////////
@@ -59,9 +61,9 @@ MainActivity extends AppCompatActivity{
     //Entry point for the app to access the database
     private FirebaseDatabase mFirebaseDatabase;
     //DatabaseReference object is a class that references a specific part of the database
-    private DatabaseReference mTaxiDatabaseReference;
+    private DatabaseReference mTaxiDatabaseReference, userRef;
     //Authentication Instance variables
-    private FirebaseAuth fireAuth;
+    private FirebaseAuth auth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     //read from the taxi node on the database
     private ChildEventListener mChildEventListener;
@@ -76,8 +78,16 @@ MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //Fireba
         mFirebaseDatabase = FirebaseDatabase.getInstance();
-        fireAuth = FirebaseAuth.getInstance();
+        auth = FirebaseAuth.getInstance();
+        Uid = auth.getCurrentUser().getUid();
+
+
+        Log.d("myTag","FireAuth user ID" +Uid);
+
+        userRef = FirebaseDatabase.getInstance().getReference("users").child(Uid);
+        userId = userRef.push().getKey();
 
 
         //Retrieving values from edit text & button
@@ -89,6 +99,16 @@ MainActivity extends AppCompatActivity{
         taxiRegNum = (TextView) findViewById(R.id.textView7);
         mCheckButton = (Button) findViewById(R.id.button);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        noButton = (Button) findViewById(R.id.noBtn);
+        yesButton = (Button) findViewById(R.id.yesBtn);
+        regOk = (TextView) findViewById(R.id.isRegTF);
+        regNotOk = (TextView) findViewById(R.id.notRegTf);
+        areYou = (TextView) findViewById(R.id.questionTF);
+
+
+        //Calculate users age
+
+
 
 
         //Check button
@@ -98,68 +118,24 @@ MainActivity extends AppCompatActivity{
 
                 mTaxiDatabaseReference = mFirebaseDatabase.getReference().child("taxi_data").child("taxi_details");
 
-                progressBar.setVisibility(View.VISIBLE);
-
-
                 String taxi_detail = taxireg.getText().toString().trim();
                 Query a = mTaxiDatabaseReference.orderByChild("car_reg").equalTo(taxi_detail);
                 Log.d("myTag","car reg"+mTaxiDatabaseReference);
                 Query b = mTaxiDatabaseReference.orderByChild("license_no").equalTo(taxi_detail); //new 24/02
-                Log.d("myTag", "Query " + b);
 
-//                a.addChildEventListener(MainActivity.this);
-                b.addChildEventListener(new ChildEventListener() {
-                    @Override
-                    public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                        if (dataSnapshot.exists()) {
-                            Map<String, Object> newPost = (Map<String, Object>) dataSnapshot.getValue();
-                            Log.d("myTag", "Map " + dataSnapshot);
+                a.addChildEventListener(MainActivity.this);
+                b.addChildEventListener(MainActivity.this); //adds license number query to
 
-                            taxiFname.setText("First Name: " + newPost.get("first_name").toString());
-                            taxiLname.setText("Last Name: " + newPost.get("last_name").toString());
-                            licenseNum.setText("License Number: " + newPost.get("license_no").toString());
-                            taxiLexp.setText("License Expiry Date : " + newPost.get("license_exp").toString());
-                            taxiRegNum.setText("Car Reg Number : " + newPost.get("car_reg").toString());
-
-                            progressBar.setVisibility(View.GONE);
+                progressBar.setVisibility(View.VISIBLE);
 
 
-                        } else {
-                            Log.d("myTag", "No Taxi" + dataSnapshot);
-
-                            progressBar.setVisibility(View.GONE);
-
-                        }
-                    }
-                    
-                    @Override
-                    public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-                    }
-
-                    @Override
-                    public void onChildRemoved(DataSnapshot dataSnapshot) {
-                        progressBar.setVisibility(View.GONE);
-
-                    }
-
-                    @Override
-                    public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                }); //adds license number query t
 
             }
 
         });
 
-        //get current user------ need this to get user and user details
-//        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+//        get current user------ need this to get user and user details
+        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
 
         // this listener will be called when there is change in firebase user session - https://firebase.google.com/docs/auth/android/password-auth
@@ -167,7 +143,10 @@ MainActivity extends AppCompatActivity{
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
+
+                Log.d("myTag","StateListener user ID");
                 if (user == null) {                                                             //User is signed out
+
                     Log.d("MyTag", "User session has ended");
                     startActivity(new Intent(MainActivity.this, LoginActivity.class));          //Go to Login screen
                     Log.d("MyTag", "Signing out user");
@@ -178,68 +157,103 @@ MainActivity extends AppCompatActivity{
     }
 
 
-//    @Override
-//    public void onDataChange(DataSnapshot dataSnapshot) {
-////        Toast.makeText(getApplicationContext(), dataSnapshot.toString(), Toast.LENGTH_LONG).show();
-//    }
-//
-//
-//    @Override
-//    public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-//        if (dataSnapshot.getValue() != null) {
-//            Log.d("myTag","No Taxi");
-//
-//        }
-//        else{
-//
-//            Log.d("myTag", "Map " + dataSnapshot);
-//        Map<String, Object> newPost = (Map<String, Object>) dataSnapshot.getValue();
-//        Log.d("myTag", "Map " + dataSnapshot);
-//        taxiFname.setText("First Name: " + newPost.get("first_name").toString());
-//        taxiLname.setText("Last Name: " + newPost.get("last_name").toString());
-//        licenseNum.setText("License Number: " + newPost.get("license_no").toString());
-//        taxiLexp.setText("License Expiry Date : " + newPost.get("license_exp").toString());
-//        taxiRegNum.setText("Car Reg Number : " + newPost.get("car_reg").toString());}
-//    }
-//
-//    @Override
-//    public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-//        Log.d("myTag","onClickChanged "+dataSnapshot);
-//
-//    }
-//
-//    @Override
-//    public void onChildRemoved(DataSnapshot dataSnapshot) {
-//
-//    }
-//
-//    @Override
-//    public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-//
-//    }
-//
-//    @Override
-//    public void onCancelled(DatabaseError databaseError) {
-//        Log.w("myTag", "postComments:onCancelled", databaseError.toException());
-//        progressBar.setVisibility(View.GONE);
-//
-//    }
+    @Override
+    public void onDataChange(DataSnapshot dataSnapshot) {
+//        Toast.makeText(getApplicationContext(), dataSnapshot.toString(), Toast.LENGTH_LONG).show();
+    }
 
-//    public Class CheckTaxi extends AsyncTask<String,String,String>
-//    {
-//        String y = "";
-//        Boolean isSuccess = false;
-//
-//        @Override
-//        protected void onPostExecute(String t){
-//        Toast.makeText(MainActivity.this, t, Toast.LENGTH_SHORT).show();
-//        if(isSuccess)
-//        {
-//            Toast.makeText(MainActivity.this , "Taxi is Registered", Toast.LENGTH_LONG).show();
-//        }
-//    }
-//
-//    }
+
+    @Override
+    public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+        Log.d("myTag", "Map " + dataSnapshot);
+        Map<String, Object> newPost = (Map<String, Object>) dataSnapshot.getValue();
+        Log.d("myTag", "Map " + dataSnapshot);
+
+        //Presents driver details
+        taxiFname.setText("First Name: " + newPost.get("first_name").toString());
+        taxiLname.setText("Last Name: " + newPost.get("last_name").toString());
+        licenseNum.setText("License Number: " + newPost.get("license_no").toString());
+        taxiLexp.setText("License Expiry Date : " + newPost.get("license_exp").toString());
+        taxiRegNum.setText("Car Reg Number : " + newPost.get("car_reg").toString());
+
+        //Temporary store details so they be stored in history and brought over to next activity
+        firstName = newPost.get("first_name").toString();
+        lastName = newPost.get("last_name").toString();
+        Log.d("myTag","stored first name: " + firstName);
+        Log.d("myTag","first name: " + newPost.get("first_name"));
+        //Stops Progress bar
+        progressBar.setVisibility(View.GONE);
+
+        //Displays buttons and "Registered" message
+        noButton.setVisibility(View.VISIBLE);
+        yesButton.setVisibility(View.VISIBLE);
+        regOk.setVisibility(View.VISIBLE);
+        areYou.setVisibility(View.VISIBLE);
+
+    }
+
+    @Override
+    public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+        Log.d("myTag","onClickChanged "+dataSnapshot);
+
+    }
+
+    @Override
+    public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+    }
+
+    @Override
+    public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+    }
+
+    @Override
+    public void onCancelled(DatabaseError databaseError) {
+        Log.w("myTag", "postComments:onCancelled", databaseError.toException());
+        progressBar.setVisibility(View.GONE);
+
+    }
+
+    //Refreshes the Validation page once the NO button is pressed
+    public void noBtn (View v){
+        recreate();
+
+        //Clear EditText field
+        taxireg.setText("");
+    }
+
+
+    //When the YES button is pressed
+    public void yesBtn (View v){
+        Log.d("myTag","Send to History "+firstName);
+        Log.d("myTag","first name: " );
+        userRef.child(userId).child("history").child("driver_lname").setValue(lastName);
+        Log.d("myTag","Send to History");
+
+
+        //Confirmation from Firebase Realtime database of upload success
+        DatabaseReference dataRef = userRef.child(userId).child("history").child("driver_fname");
+        dataRef.setValue(firstName, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                if (databaseError != null) {
+                    Log.d("MyTag","databaseError");
+                    Toast.makeText(MainActivity.this, "Data update failed", Toast.LENGTH_SHORT).show();
+                } else {
+
+                    Toast.makeText(MainActivity.this, "Stored to history", Toast.LENGTH_SHORT).show();
+                    Log.d("MyTag","database works!");
+
+                }
+
+            }
+
+        });
+
+    }
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -250,14 +264,14 @@ MainActivity extends AppCompatActivity{
 
     //sign out method
     public void signOut() {
-        fireAuth.signOut();
+        auth.signOut();
         Log.d("myTag","SignOut activated");
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        fireAuth.addAuthStateListener(mAuthStateListener);
+        auth.addAuthStateListener(mAuthStateListener);
         Log.d("myTag","onStart "+ mAuthStateListener);
     }
 
@@ -266,7 +280,7 @@ MainActivity extends AppCompatActivity{
         Log.d("myTag","Start onStop method");
         super.onStop();
         if (mAuthStateListener != null) {
-            fireAuth.removeAuthStateListener(mAuthStateListener);
+            auth.removeAuthStateListener(mAuthStateListener);
             Log.d("myTag","onStop ");
         }
     }
