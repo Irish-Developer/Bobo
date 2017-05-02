@@ -157,10 +157,10 @@ public class FormActivity extends AppCompatActivity {
 
 
                 if (!TextUtils.isEmpty(eEmail))
-                    mDatabaseRef.child("contacts").child(contactsId).child("emerEmail").setValue(eEmail);
+                    mDatabaseRef.child("contacts").child(contactsId).child("emergencyEmail").setValue(eEmail);
 
                 if (!TextUtils.isEmpty(eName))
-                    mDatabaseRef.child("contacts").child(contactsId).child("emerName").setValue(eName);
+                    mDatabaseRef.child("contacts").child(contactsId).child("emergencyName").setValue(eName);
 
                 if (!TextUtils.isEmpty(day))
                     mDatabaseRef.child("dob").child("dobDay").setValue(day);

@@ -37,12 +37,19 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
     //Firebase dependencies
-    compile 'com.android.support:appcompat-v7:24.2.1'
-    compile 'com.google.firebase:firebase-core:10.0.1'
-    compile 'com.google.firebase:firebase-database:10.0.1'
-    compile 'com.google.firebase:firebase-auth:10.0.1'
+    compile 'com.android.support:appcompat-v7:25.0.1'
+    compile 'com.google.firebase:firebase-core:10.2.4'
+    compile 'com.google.firebase:firebase-database:10.2.4'
+    compile 'com.google.firebase:firebase-auth:10.2.4'
     //Authentication UI (reference: https://github.com/firebase/FirebaseUI-Android/tree/master/auth)
     compile 'com.firebaseui:firebase-ui-auth:1.0.1'
+
+    //Google Play Services - Used for location
+    compile 'com.google.android.gms:play-services:10.2.4'
+    compile 'com.google.android.gms:play-services-location:10.2.4'
+    compile 'com.google.android.gms:play-services-maps:10.2.4'
+
+
 
     testCompile 'junit:junit:4.12'
 }

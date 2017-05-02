@@ -1,26 +1,26 @@
 package com.finalproject.youcef.bobo;
 
-import android.app.Dialog;
-import android.content.Context;
-import android.content.DialogInterface;
+
+import android.content.pm.PackageManager;
+import android.location.Location;
+
 import android.support.annotation.BoolRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.app.AlertDialog;
-import android.os.AsyncTask;
+import android.text.TextUtils;
 import android.util.Log;
 import android.os.Bundle;
 import android.content.Intent;
-import android.view.LayoutInflater;
+
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+
 import android.widget.Button;
-import android.text.InputFilter;
-import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,10 +29,13 @@ import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.util.Map;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
-import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseError;
@@ -41,20 +44,16 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 
-public class
-
-MainActivity extends AppCompatActivity implements ValueEventListener, ChildEventListener {
-
-    public static final int DEFAULT_INPUT_LIMIT = 12;
-    public static final int RC_SIGN_IN = 1; //RC stands for Request Code
+public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ValueEventListener, ChildEventListener {
 
     private Button mCheckButton, noButton, yesButton;
     private EditText taxireg;
     private ProgressBar progressBar;
     private TextView taxiFname, taxiLname, licenseNum, taxiLexp, taxiRegNum, regOk, regNotOk, areYou;
-    private String historyId, Uid, firstName, lastName, lnumber, lexpirary, regNum,dateNow, timeNow;
+    private String historyId, Uid, firstName, lastName, lnumber, lexpirary, regNum, dateNow, timeNow;
     private Date date, time;
-
+    private GoogleApiClient googleApiClient;
+    private Location mLastLocation;
 
 
     //////////using classes from the FirebaseDatabase API //////////
@@ -71,37 +70,44 @@ MainActivity extends AppCompatActivity implements ValueEventListener, ChildEvent
     private ChildEventListener mChildEventListener;
 
 
-
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Fireba
+        //Firebase instances
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         auth = FirebaseAuth.getInstance();
         Uid = auth.getCurrentUser().getUid();
 
 
-        Log.d("myTag","FireAuth user ID" +Uid);
+        Log.d("myTag", "FireAuth user ID" + Uid);
 
         userRef = FirebaseDatabase.getInstance().getReference("users").child(Uid);
         historyId = userRef.push().getKey();
+
+
+        // Create an instance of GoogleAPIClient.
+        if (googleApiClient == null) {
+            googleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+            Log.d("myTag", "Google API Connection: " + googleApiClient);
+        }
 
         //Get the current date
         date = new Date();
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         dateNow = dateFormat.format(date);
-        Log.d("myTag","Current date: " + dateNow);
+        Log.d("myTag", "Current date: " + dateNow);
 
         //Get the current date
         time = new Date();
         SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm:ss a");
         timeNow = timeFormat.format(time);
-        Log.d("myTag","Current time: " + timeNow);
+        Log.d("myTag", "Current time: " + timeNow);
 
         //Retrieving values from edit text & button
         taxireg = (EditText) findViewById(R.id.checkTF);
@@ -122,18 +128,24 @@ MainActivity extends AppCompatActivity implements ValueEventListener, ChildEvent
         //Calculate users age
 
 
-
-
         //Check button
-        mCheckButton.setOnClickListener(new View.OnClickListener(){
+        mCheckButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v){
+            public void onClick(View v) {
+
+                //Check to make sure the EditText is not empty
+                String userInput = taxireg.getText().toString().trim();
+                if (TextUtils.isEmpty(userInput)) {
+                    Toast.makeText(getApplicationContext(), "Please input taxi Registration or License number.", Toast.LENGTH_LONG).show();
+                    progressBar.setVisibility(View.GONE);
+                    return;
+                }
 
                 mTaxiDatabaseReference = mFirebaseDatabase.getReference().child("taxi_data").child("taxi_details");
 
                 String taxi_detail = taxireg.getText().toString().trim();
                 Query a = mTaxiDatabaseReference.orderByChild("car_reg").equalTo(taxi_detail);
-                Log.d("myTag","car reg"+mTaxiDatabaseReference);
+                Log.d("myTag", "car reg" + mTaxiDatabaseReference);
                 Query b = mTaxiDatabaseReference.orderByChild("license_no").equalTo(taxi_detail); //new 24/02
 
                 a.addChildEventListener(MainActivity.this);
@@ -142,13 +154,12 @@ MainActivity extends AppCompatActivity implements ValueEventListener, ChildEvent
                 progressBar.setVisibility(View.VISIBLE);
 
 
-
             }
 
         });
 
 //        get current user------ need this to get user and user details
-        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+//        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
 
         // this listener will be called when there is change in firebase user session - https://firebase.google.com/docs/auth/android/password-auth
@@ -157,7 +168,7 @@ MainActivity extends AppCompatActivity implements ValueEventListener, ChildEvent
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
 
-                Log.d("myTag","StateListener user ID");
+                Log.d("myTag", "StateListener user ID");
                 if (user == null) {                                                             //User is signed out
 
                     Log.d("MyTag", "User session has ended");
@@ -195,8 +206,8 @@ MainActivity extends AppCompatActivity implements ValueEventListener, ChildEvent
         lnumber = newPost.get("license_no").toString();
         lexpirary = newPost.get("license_exp").toString();
         regNum = newPost.get("car_reg").toString();
-        Log.d("myTag","stored first name: " + firstName);
-        Log.d("myTag","first name: " + newPost.get("first_name"));
+        Log.d("myTag", "stored first name: " + firstName);
+        Log.d("myTag", "first name: " + newPost.get("first_name"));
         //Stops Progress bar
         progressBar.setVisibility(View.GONE);
 
@@ -210,7 +221,7 @@ MainActivity extends AppCompatActivity implements ValueEventListener, ChildEvent
 
     @Override
     public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-        Log.d("myTag","onClickChanged "+dataSnapshot);
+        Log.d("myTag", "onClickChanged " + dataSnapshot);
 
     }
 
@@ -226,13 +237,11 @@ MainActivity extends AppCompatActivity implements ValueEventListener, ChildEvent
 
     @Override
     public void onCancelled(DatabaseError databaseError) {
-        Log.w("myTag", "postComments:onCancelled", databaseError.toException());
-        progressBar.setVisibility(View.GONE);
 
     }
 
     //Refreshes the Validation page once the NO button is pressed
-    public void noBtn (View v){
+    public void noBtn(View v) {
         recreate();
 
         //Clear EditText field
@@ -240,33 +249,46 @@ MainActivity extends AppCompatActivity implements ValueEventListener, ChildEvent
     }
 
 
-    //When the YES button is pressed
-    public void yesBtn (View v){
+    //////////////////////////////////////////////////////////////////////////////////////When the YES button is pressed///////////////////////////////////////////////////////////////////////////////
+    public void yesBtn(View v) {
+
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                googleApiClient);
+        if (mLastLocation != null) {
+            double mLatitude = mLastLocation.getLatitude();
+            double mLongitude = mLastLocation.getLongitude();
+            Log.d("myTag", "Latitude: " + mLatitude);
+            Log.d("myTag", "Longitude: " + mLongitude);
+
+            //Storing location to history node
+            userRef.child("history").child(historyId).child("location").child("longitude").setValue(mLongitude);
+            userRef.child("history").child(historyId).child("location").child("latitude").setValue(mLatitude);
+        }
 
         //Storing taxi driver details to History table / node
-        Log.d("myTag","Send to History "+firstName);
-        Log.d("myTag","first name: " );
-        userRef.child("history").child(historyId).child("driver_lname").setValue(lastName);
-        userRef.child("history").child(historyId).child("license_number").setValue(lnumber);
-        userRef.child("history").child(historyId).child("license_expDate").setValue(lexpirary);
-        userRef.child("history").child(historyId).child("reg_number").setValue(regNum);
+        Log.d("myTag", "Send to History " + firstName);
+        Log.d("myTag", "first name: ");
+        userRef.child("history").child(historyId).child("driver_details").child("driver_lname").setValue(lastName);
+        userRef.child("history").child(historyId).child("driver_details").child("license_number").setValue(lnumber);
+        userRef.child("history").child(historyId).child("driver_details").child("license_expDate").setValue(lexpirary);
+        userRef.child("history").child(historyId).child("driver_details").child("reg_number").setValue(regNum);
 
-        userRef.child("history").child(historyId).child("date").setValue(dateNow);
-        userRef.child("history").child(historyId).child("time").setValue(timeNow);
-        Log.d("myTag","Sent to History");
+        userRef.child("history").child(historyId).child("date_time").child("date").setValue(dateNow);
+        userRef.child("history").child(historyId).child("date_time").child("time").setValue(timeNow);
+        Log.d("myTag", "Sent to History");
 
         //Confirmation from Firebase Realtime database of upload success
-        DatabaseReference dataRef = userRef.child("history").child(historyId).child("driver_fname");
+        DatabaseReference dataRef = userRef.child("history").child(historyId).child("driver_details").child("driver_fname");
         dataRef.setValue(firstName, new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                 if (databaseError != null) {
-                    Log.d("MyTag","databaseError");
+                    Log.d("MyTag", "databaseError");
                     Toast.makeText(MainActivity.this, "Data update failed", Toast.LENGTH_SHORT).show();
                 } else {
 
                     Toast.makeText(MainActivity.this, "Stored to history", Toast.LENGTH_SHORT).show();
-                    Log.d("MyTag","database works!");
+                    Log.d("MyTag", "database works!");
 
                 }
 
@@ -275,7 +297,6 @@ MainActivity extends AppCompatActivity implements ValueEventListener, ChildEvent
         });
 
     }
-
 
 
     @Override
@@ -288,23 +309,30 @@ MainActivity extends AppCompatActivity implements ValueEventListener, ChildEvent
     //sign out method
     public void signOut() {
         auth.signOut();
-        Log.d("myTag","SignOut activated");
+        Log.d("myTag", "SignOut activated");
     }
 
     @Override
     public void onStart() {
+        //Connect to Google API
+        googleApiClient.connect();
+
+        //Start MainActivity
         super.onStart();
         auth.addAuthStateListener(mAuthStateListener);
-        Log.d("myTag","onStart "+ mAuthStateListener);
+        Log.d("myTag", "onStart " + mAuthStateListener);
     }
 
     @Override
     public void onStop() {
-        Log.d("myTag","Start onStop method");
+        //Disconnect from Google API
+        googleApiClient.disconnect();
         super.onStop();
+
+        //This listens to see if the user has signed out
         if (mAuthStateListener != null) {
             auth.removeAuthStateListener(mAuthStateListener);
-            Log.d("myTag","onStop ");
+            Log.d("myTag", "onStop ");
         }
     }
 
@@ -314,10 +342,49 @@ MainActivity extends AppCompatActivity implements ValueEventListener, ChildEvent
             case R.id.sign_out_option:
                 //Sign out
                 signOut();
-                Log.d("myTag","Sign out");
+                Log.d("myTag", "Sign out");
+                return true;
+            case R.id.history:
+                //Go to History page
+                startActivity(new Intent(MainActivity.this, HistoryActivity.class));
+                finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                googleApiClient);
+        if (mLastLocation != null) {
+           double mLatitude = mLastLocation.getLatitude();
+            double mLongitude = mLastLocation.getLongitude();
+            Log.d("myTag","Latitude: " +mLatitude);
+            Log.d("myTag","Longitude: " +mLongitude);
+
+        }
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
     }
 }
