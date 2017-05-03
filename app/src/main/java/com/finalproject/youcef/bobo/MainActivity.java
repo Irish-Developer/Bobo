@@ -128,6 +128,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         //Calculate users age
 
 
+
         //Check button
         mCheckButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -145,7 +146,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                 String taxi_detail = taxireg.getText().toString().trim();
                 Query a = mTaxiDatabaseReference.orderByChild("car_reg").equalTo(taxi_detail);
-                Log.d("myTag", "car reg" + mTaxiDatabaseReference);
+                Log.d("myTag", "car reg " + mTaxiDatabaseReference);
                 Query b = mTaxiDatabaseReference.orderByChild("license_no").equalTo(taxi_detail); //new 24/02
 
                 a.addChildEventListener(MainActivity.this);
@@ -157,9 +158,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             }
 
         });
-
-//        get current user------ need this to get user and user details
-//        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
 
         // this listener will be called when there is change in firebase user session - https://firebase.google.com/docs/auth/android/password-auth
@@ -261,24 +259,24 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             Log.d("myTag", "Longitude: " + mLongitude);
 
             //Storing location to history node
-            userRef.child("history").child(historyId).child("location").child("longitude").setValue(mLongitude);
-            userRef.child("history").child(historyId).child("location").child("latitude").setValue(mLatitude);
+            userRef.child("history").child(historyId).child("longitude").setValue(mLongitude);
+            userRef.child("history").child(historyId).child("latitude").setValue(mLatitude);
         }
 
         //Storing taxi driver details to History table / node
         Log.d("myTag", "Send to History " + firstName);
         Log.d("myTag", "first name: ");
-        userRef.child("history").child(historyId).child("driver_details").child("driver_lname").setValue(lastName);
-        userRef.child("history").child(historyId).child("driver_details").child("license_number").setValue(lnumber);
-        userRef.child("history").child(historyId).child("driver_details").child("license_expDate").setValue(lexpirary);
-        userRef.child("history").child(historyId).child("driver_details").child("reg_number").setValue(regNum);
+        userRef.child("history").child(historyId).child("driver_lname").setValue(lastName);
+        userRef.child("history").child(historyId).child("license_number").setValue(lnumber);
+        userRef.child("history").child(historyId).child("license_expDate").setValue(lexpirary);
+        userRef.child("history").child(historyId).child("reg_number").setValue(regNum);
 
-        userRef.child("history").child(historyId).child("date_time").child("date").setValue(dateNow);
-        userRef.child("history").child(historyId).child("date_time").child("time").setValue(timeNow);
+        userRef.child("history").child(historyId).child("date").setValue(dateNow);
+        userRef.child("history").child(historyId).child("time").setValue(timeNow);
         Log.d("myTag", "Sent to History");
 
         //Confirmation from Firebase Realtime database of upload success
-        DatabaseReference dataRef = userRef.child("history").child(historyId).child("driver_details").child("driver_fname");
+        DatabaseReference dataRef = userRef.child("history").child(historyId).child("driver_fname");
         dataRef.setValue(firstName, new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {

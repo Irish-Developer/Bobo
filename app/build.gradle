@@ -42,7 +42,7 @@ dependencies {
     compile 'com.google.firebase:firebase-database:10.2.4'
     compile 'com.google.firebase:firebase-auth:10.2.4'
     //Authentication UI (reference: https://github.com/firebase/FirebaseUI-Android/tree/master/auth)
-    compile 'com.firebaseui:firebase-ui-auth:1.0.1'
+    compile 'com.firebaseui:firebase-ui:1.2.0'
 
     //Google Play Services - Used for location
     compile 'com.google.android.gms:play-services:10.2.4'
