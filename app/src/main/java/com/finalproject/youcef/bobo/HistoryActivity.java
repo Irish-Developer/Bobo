@@ -117,8 +117,11 @@ public class HistoryActivity extends AppCompatActivity{
                 mChildEventListener = new ChildEventListener() {
                     @Override
                     public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
                         HistoryData historyData = dataSnapshot.getValue(HistoryData.class);
                         historyAdapter.add(historyData);
+                        Log.d("myTag", "List View Driver first name: " + dataSnapshot);
+
                         Log.d("myTag", "List View Driver first name: " + historyData);
 //
 ////
@@ -127,7 +130,7 @@ public class HistoryActivity extends AppCompatActivity{
 //                        Log.d("myTag", "Map " + dataSnapshot);
 
 
-//                        HistoryData friendlyMessage = new HistoryData(firstName.getFname().toString(), null);
+                        //HistoryData historyData = new HistoryData(firstName.getFname().toString(), null);
 
                     }
 

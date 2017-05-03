@@ -4,6 +4,8 @@ package com.finalproject.youcef.bobo;
 import android.content.pm.PackageManager;
 import android.location.Location;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.BoolRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -28,6 +30,8 @@ import android.widget.Toast;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -50,10 +54,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private EditText taxireg;
     private ProgressBar progressBar;
     private TextView taxiFname, taxiLname, licenseNum, taxiLexp, taxiRegNum, regOk, regNotOk, areYou;
-    private String historyId, Uid, firstName, lastName, lnumber, lexpirary, regNum, dateNow, timeNow;
+    private String historyId, Uid, username, firstName, lastName, lnumber, lexpirary, regNum, dateNow, timeNow;
     private Date date, time;
     private GoogleApiClient googleApiClient;
     private Location mLastLocation;
+    Timer t = new Timer();
+
 
 
     //////////using classes from the FirebaseDatabase API //////////
@@ -70,6 +76,58 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private ChildEventListener mChildEventListener;
 
 
+//    public MainActivity(Parcel parcel) {
+//        historyId = parcel.readString();
+//        Uid = parcel.readString();
+//        firstName = parcel.readString();
+//        lastName = parcel.readString();
+//        lnumber = parcel.readString();
+//        lexpirary = parcel.readString();
+//        regNum = parcel.readString();
+//        dateNow = parcel.readString();
+//        timeNow = parcel.readString();
+//        Log.d("myTag","Parcel Time: " +timeNow);
+//        mLastLocation = parcel.readParcelable(Location.class.getClassLoader());
+//    }
+//
+//    @Override
+//    public void writeToParcel(Parcel dest, int flags) {
+//        dest.writeString(historyId);
+//        dest.writeString(Uid);
+//        dest.writeString(firstName);
+//        dest.writeString(lastName);
+//        dest.writeString(lnumber);
+//        dest.writeString(lexpirary);
+//        dest.writeString(regNum);
+//        dest.writeString(dateNow);
+//        dest.writeString(timeNow);
+//
+//        dest.writeParcelable(mLastLocation, flags);
+//    }
+//
+//    @Override
+//    public int describeContents() {
+//        return hashCode();
+//    }
+//
+//    public static final Parcelable.Creator<MainActivity> CREATOR = new Parcelable.Creator<MainActivity>() {
+//        @Override
+//        public MainActivity createFromParcel(Parcel parcel) {
+//            return new MainActivity(parcel);
+//        }
+//
+//        @Override
+//        public MainActivity[] newArray(int size) {
+//            return new MainActivity[0];
+//        }
+//    };
+
+//    Intent intent = new Intent (MainActivity.this,ContactsActivity.class);
+//
+//    start
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,10 +139,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         Uid = auth.getCurrentUser().getUid();
 
 
+
         Log.d("myTag", "FireAuth user ID" + Uid);
 
         userRef = FirebaseDatabase.getInstance().getReference("users").child(Uid);
         historyId = userRef.push().getKey();
+        username = userRef.child("name").child("fname").toString();
+        Log.d("myTag", "username: "+username);
 
 
         // Create an instance of GoogleAPIClient.
@@ -151,7 +212,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                 a.addChildEventListener(MainActivity.this);
                 b.addChildEventListener(MainActivity.this); //adds license number query to
-
+                t = new Timer();
+                t.schedule(new Task(b), 5000, 1);
                 progressBar.setVisibility(View.VISIBLE);
 
 
@@ -179,6 +241,28 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
 
+    class Task extends TimerTask{
+
+        private final Query a;
+
+        public Task(Query a){
+            this.a=a;
+        }
+        public void run(){
+            a.removeEventListener((ChildEventListener) MainActivity.this);
+            Log.d("dom", "worked");
+            t.cancel();
+            MainActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Log.d("Dom","worked2");
+                    progressBar.setVisibility(View.GONE);
+                    Toast.makeText(MainActivity.this, "Not Registered", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
+    }
     @Override
     public void onDataChange(DataSnapshot dataSnapshot) {
 //        Toast.makeText(getApplicationContext(), dataSnapshot.toString(), Toast.LENGTH_LONG).show();
@@ -293,6 +377,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             }
 
         });
+//        startActivity(new Intent(MainActivity.this, ContactsActivity.class));
+//        finish();
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, "This is my text to send."+username);
+        sendIntent.setType("text/plain");
+        startActivity(sendIntent);
+
+
 
     }
 

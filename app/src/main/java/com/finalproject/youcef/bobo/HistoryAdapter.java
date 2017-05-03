@@ -35,8 +35,8 @@ public class HistoryAdapter extends ArrayAdapter<HistoryData> {
 
         HistoryData history = getItem(position);
 
-        dateTextView.setText(history.getlNumber());
-        fNameTextView.setText(history.getFname());
+        dateTextView.setText(history.getLicense_number());
+        fNameTextView.setText(history.getDriver_fname());
         Log.d("myTag", "dateTV: " +dateTextView);
 
         return convertView;

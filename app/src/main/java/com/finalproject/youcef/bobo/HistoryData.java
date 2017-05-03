@@ -8,53 +8,98 @@ import android.util.Log;
 
 public class HistoryData {
 
-    private String fname, lname, expDate, lNumber, regNumber;
+    public String date, driver_fname, driver_lname, license_expDate, license_number, reg_number, time;
+
+    double longitude, latitude ;
 
     public HistoryData(){
 
     }
 
-    public HistoryData(String driver_fname, String driver_lname, String license_expDate, String license_number, String reg_number){
-        this.fname = driver_fname;
-        this.lname = driver_lname;
-        expDate = license_expDate;
-        lNumber = license_number;
-        regNumber = reg_number;
+    public String getDriver_lname() {
+        return driver_lname;
     }
 
-    public String getFname(){
-        Log.d("myTag", "EventListener: " + fname);
-        return fname;
+    public void setDriver_lname(String driver_lname) {
+        this.driver_lname = driver_lname;
     }
-    public void setFname(String driver_fname){
-        this.fname = driver_fname;
+
+    public String getLicense_expDate() {
+        return license_expDate;
     }
-    //Get and Set
-    public String getLname(){
-        return lname;
+
+    public void setLicense_expDate(String license_expDate) {
+        this.license_expDate = license_expDate;
     }
-    public void setLname(String driver_lname){
-        lname = driver_lname;
+
+    public String getLicense_number() {
+        return license_number;
     }
-    //Get and Set
-    public String getExpDate(){
-        return expDate;
+
+    public void setLicense_number(String license_number) {
+        this.license_number = license_number;
     }
-    public void setExpDate(String license_expDate){
-        expDate = license_expDate;
+
+    public String getReg_number() {
+        return reg_number;
     }
-    //Get and Set license number
-    public String getlNumber(){
-        return lNumber;
+
+    public void setReg_number(String reg_number) {
+        this.reg_number = reg_number;
     }
-    public void setlNumber(String license_number){
-        lNumber = license_number;
+
+    public String getTime() {
+        return time;
     }
-    //Get and Set license number
-    public String getRegNumber(){
-        return regNumber;
+
+    public void setTime(String time) {
+        this.time = time;
     }
-    public void setRegNumber(String reg_number){
-        regNumber = reg_number;
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public String getDriver_fname() {
+        return driver_fname;
+    }
+
+    public void setDriver_fname(String driver_fname) {
+        this.driver_fname = driver_fname;
+    }
+
+    @Override
+    public String toString() {
+        return "HistoryData{" +
+                "date='" + date + '\'' +
+                ", driver_fname='" + driver_fname + '\'' +
+                ", driver_lname='" + driver_lname + '\'' +
+                ", license_expDate='" + license_expDate + '\'' +
+                ", license_number='" + license_number + '\'' +
+                ", reg_number='" + reg_number + '\'' +
+                ", time='" + time + '\'' +
+                ", longitude='" + longitude + '\'' +
+                ", latitude='" + latitude + '\'' +
+                '}';
     }
 }
