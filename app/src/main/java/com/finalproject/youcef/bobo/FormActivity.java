@@ -1,18 +1,24 @@
 package com.finalproject.youcef.bobo;
 
 /**************************************************************************************************************************
- * References for regular expression:
+ * References for
+ * Regular expression:
  *
  * Email:       @uthor= Rahul Baradia | Website= StackOverflow | URL= http://stackoverflow.com/questions/12947620/email-address-validation-in-android-on-edittext
  * Date:        @uthor= Dany Lauener | Website=Regular Expression Language | URL= http://www.regexlib.com/(A(c6LgOXWtNZyRBnekhSOqOgnJA18Zo2E_NhvTCKNFATD_7vm7lCwOZdwdgLJJKu8h5Lyt9oTP6411PFuAU97m_19qgpxizUCI8NU8d5YTuFE0f8ngkDsNSfTsPVPunrUomyUI-a3qwL_ihigV1lZ_8wQ_BQ-uRacmKbtG-hIoj_9jua-luv5s64SbyjML5Qot0))/DisplayPatterns.aspx?cattabindex=5&categoryId=5
  *
+ * TextWatcher:
+ *
+ *  @uthor= anoop | Website= Stackoverflow | URL= http://stackoverflow.com/questions/12418324/android-move-cursor-from-one-edittext-to-another-one-if-click-any-letter-in-fiel
  *******************************************************************************************************************************/
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -58,7 +64,7 @@ public class FormActivity extends AppCompatActivity {
 
 
         contactsId = mDatabaseRef.push().getKey();
-//            Log.d("MyTag", "user id: " +userId);
+           Log.d("MyTag", "contact id: " +contactsId);
 //        FirebaseDatabase = mDatabaseRef.getReference("users");
 
         fname = (EditText) findViewById(R.id.firstName);
@@ -70,6 +76,7 @@ public class FormActivity extends AppCompatActivity {
         dobYear = (EditText) findViewById(R.id.year);
         continBtn = (Button) findViewById(R.id.continueBtn);
         progressBar3 = (ProgressBar) findViewById(R.id.progressBar3);
+
 
         // When the continue button is pressed
         continBtn.setOnClickListener(new View.OnClickListener() {
@@ -91,7 +98,6 @@ public class FormActivity extends AppCompatActivity {
                 //Then I am going to check it with the dobPattern to make sure it's a valid dob
                 String tempDob = (day + "/" + month + "/" + year);
                 Log.d("myTag","Temp Dob " +tempDob);
-
 
                 if (TextUtils.isEmpty(firstName)) {
                     Toast.makeText(getApplicationContext(), "Add your first name", Toast.LENGTH_SHORT).show();
@@ -199,5 +205,60 @@ public class FormActivity extends AppCompatActivity {
 
             }
         });
+
+        //Automatically move from dobDay EditText to dobMonth EditText
+        dobDay.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                //Automatically generated method - cannot be removed
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Integer length = dobDay.getText().length();
+                Log.d("myTag", "TextChanged");
+                if(length >= 2){
+                    dobMonth.requestFocus();}}
+            @Override
+            public void afterTextChanged(Editable s) {
+                //Automatically generated method - cannot be removed
+            }
+        });
+
+        //Automatically move from dobMonth EditText to dobYear EditText
+        dobMonth.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Integer length = dobMonth.getText().length();
+                Log.d("myTag", "TextChanged");
+                if(length >= 2){
+                    dobYear.requestFocus();
+                }
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
+        //Automatically move from dobYear EditText to emarName EditText
+        dobYear.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Integer length = dobYear.getText().length();
+                Log.d("myTag", "TextChanged");
+                if(length >= 4){
+                    emerName.requestFocus();
+                }
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
     }
 }

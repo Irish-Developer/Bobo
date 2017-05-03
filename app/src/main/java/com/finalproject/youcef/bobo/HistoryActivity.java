@@ -171,6 +171,29 @@ public class HistoryActivity extends AppCompatActivity{
     }
 
 
+    @Override
+    public void onStart() {
+        //Connect to Google API
+//        googleApiClient.connect();
+
+        //Start MainActivity
+        super.onStart();
+        auth.addAuthStateListener(mAuthStateListener);
+        Log.d("myTag", "onStart " + mAuthStateListener);
+    }
+
+    @Override
+    public void onStop() {
+        //Disconnect from Google API
+//        googleApiClient.disconnect();
+        super.onStop();
+
+        //This listens to see if the user has signed out
+        if (mAuthStateListener != null) {
+            auth.removeAuthStateListener(mAuthStateListener);
+            Log.d("myTag", "onStop ");
+        }
+    }
 
     //sign out method
     public void signOut() {

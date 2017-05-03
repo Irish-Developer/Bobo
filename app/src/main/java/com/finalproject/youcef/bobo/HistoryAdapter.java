@@ -29,7 +29,6 @@ public class HistoryAdapter extends ArrayAdapter<HistoryData> {
             convertView = ((Activity) getContext()).getLayoutInflater().inflate(R.layout.item_history, parent, false);
         }
 
-//        ImageView photoImageView = (TextView) convertView.findViewById(R.id.photoImageView);
         TextView dateTextView = (TextView) convertView.findViewById(R.id.dateTV);
         TextView fNameTextView = (TextView) convertView.findViewById(R.id.driverNameTV);
 

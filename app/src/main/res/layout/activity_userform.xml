@@ -8,7 +8,7 @@
     <EditText
         android:layout_width="180dp"
         android:layout_height="45sp"
-        android:inputType="textPersonName"
+        android:inputType="textCapSentences"
         android:ems="10"
         android:id="@+id/firstName"
         android:layout_marginTop="30dp"
@@ -23,7 +23,7 @@
     <EditText
         android:layout_width="180dp"
         android:layout_height="45sp"
-        android:inputType="textPersonName"
+        android:inputType="textCapSentences"
         android:ems="10"
         android:layout_marginLeft="25dp"
         android:layout_marginStart="25dp"
@@ -92,7 +92,7 @@
     <EditText
         android:layout_width="match_parent"
         android:layout_height="45sp"
-        android:inputType="textPersonName"
+        android:inputType="textCapSentences"
         android:ems="10"
         android:id="@+id/emerConName"
         android:hint="@string/emergency_contact_name"
