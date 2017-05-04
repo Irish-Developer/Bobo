@@ -58,8 +58,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private Date date, time;
     private GoogleApiClient googleApiClient;
     private Location mLastLocation;
+    private Boolean dataTrue;
     Timer t = new Timer();
-
 
 
     //////////using classes from the FirebaseDatabase API //////////
@@ -75,59 +75,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     //read from the taxi node on the database
     private ChildEventListener mChildEventListener;
 
-
-//    public MainActivity(Parcel parcel) {
-//        historyId = parcel.readString();
-//        Uid = parcel.readString();
-//        firstName = parcel.readString();
-//        lastName = parcel.readString();
-//        lnumber = parcel.readString();
-//        lexpirary = parcel.readString();
-//        regNum = parcel.readString();
-//        dateNow = parcel.readString();
-//        timeNow = parcel.readString();
-//        Log.d("myTag","Parcel Time: " +timeNow);
-//        mLastLocation = parcel.readParcelable(Location.class.getClassLoader());
-//    }
-//
-//    @Override
-//    public void writeToParcel(Parcel dest, int flags) {
-//        dest.writeString(historyId);
-//        dest.writeString(Uid);
-//        dest.writeString(firstName);
-//        dest.writeString(lastName);
-//        dest.writeString(lnumber);
-//        dest.writeString(lexpirary);
-//        dest.writeString(regNum);
-//        dest.writeString(dateNow);
-//        dest.writeString(timeNow);
-//
-//        dest.writeParcelable(mLastLocation, flags);
-//    }
-//
-//    @Override
-//    public int describeContents() {
-//        return hashCode();
-//    }
-//
-//    public static final Parcelable.Creator<MainActivity> CREATOR = new Parcelable.Creator<MainActivity>() {
-//        @Override
-//        public MainActivity createFromParcel(Parcel parcel) {
-//            return new MainActivity(parcel);
-//        }
-//
-//        @Override
-//        public MainActivity[] newArray(int size) {
-//            return new MainActivity[0];
-//        }
-//    };
-
-//    Intent intent = new Intent (MainActivity.this,ContactsActivity.class);
-//
-//    start
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -139,13 +86,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         Uid = auth.getCurrentUser().getUid();
 
 
-
         Log.d("myTag", "FireAuth user ID" + Uid);
 
         userRef = FirebaseDatabase.getInstance().getReference("users").child(Uid);
         historyId = userRef.push().getKey();
         username = userRef.child("name").child("fname").toString();
-        Log.d("myTag", "username: "+username);
+        Log.d("myTag", "username: " + username);
 
 
         // Create an instance of GoogleAPIClient.
@@ -189,7 +135,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         //Calculate users age
 
 
-
         //Check button
         mCheckButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -213,7 +158,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 a.addChildEventListener(MainActivity.this);
                 b.addChildEventListener(MainActivity.this); //adds license number query to
                 t = new Timer();
-                t.schedule(new Task(b), 5000, 1);
+                t.schedule(new Task(b), 6000, 1);
+
+//                if (dataTrue == true) {
+//                    t.cancel();
+//                }
+
                 progressBar.setVisibility(View.VISIBLE);
 
 
@@ -241,28 +191,36 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
 
-    class Task extends TimerTask{
+    class Task extends TimerTask {
 
         private final Query a;
 
-        public Task(Query a){
-            this.a=a;
-        }
-        public void run(){
-            a.removeEventListener((ChildEventListener) MainActivity.this);
-            Log.d("dom", "worked");
-            t.cancel();
-            MainActivity.this.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Log.d("Dom","worked2");
-                    progressBar.setVisibility(View.GONE);
-                    Toast.makeText(MainActivity.this, "Not Registered", Toast.LENGTH_SHORT).show();
-                }
-            });
+        public Task(Query a) {
+            this.a = a;
         }
 
+
+        public void run() {
+//            if (dataTrue == true) {
+////                a.removeEventListener((ChildEventListener) MainActivity.this);
+////                Log.d("dom", "worked");
+////                t.cancel();
+//            }else {
+                Log.d("myTag", "There is NO Data");
+                a.removeEventListener((ChildEventListener) MainActivity.this);
+                Log.d("dom", "worked");
+                t.cancel();
+                MainActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.d("Dom", "worked2");
+                        progressBar.setVisibility(View.GONE);
+                        Toast.makeText(MainActivity.this, "Not Registered", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
     }
+
     @Override
     public void onDataChange(DataSnapshot dataSnapshot) {
 //        Toast.makeText(getApplicationContext(), dataSnapshot.toString(), Toast.LENGTH_LONG).show();
@@ -275,6 +233,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         Map<String, Object> newPost = (Map<String, Object>) dataSnapshot.getValue();
         Log.d("myTag", "Map " + dataSnapshot);
 
+//        Stops the timer from activating the "Not Registered" message to the user
+        if (dataSnapshot.hasChild("first_name")){
+            t.cancel();
+        }
         //Presents driver details
         taxiFname.setText("First Name: " + newPost.get("first_name").toString());
         taxiLname.setText("Last Name: " + newPost.get("last_name").toString());
@@ -334,6 +296,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     //////////////////////////////////////////////////////////////////////////////////////When the YES button is pressed///////////////////////////////////////////////////////////////////////////////
     public void yesBtn(View v) {
 
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            return;
+        }
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
                 googleApiClient);
         if (mLastLocation != null) {
@@ -438,7 +404,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             case R.id.history:
                 //Go to History page
                 startActivity(new Intent(MainActivity.this, HistoryActivity.class));
-                finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -448,13 +413,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
+            //Auto generated method for Permissions to use location
             return;
         }
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(

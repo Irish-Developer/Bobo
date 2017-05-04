@@ -70,14 +70,7 @@ public class HistoryActivity extends AppCompatActivity{
         userRef = FirebaseDatabase.getInstance().getReference("users").child(Uid);
         historyId = userRef.push().getKey();
 
-
         driverRef = mFirebaseDatabase.getReference("users").child(Uid).child("history");
-
-//        TODO Get data to HistoryData class
-//        HistoryData historyData = new HistoryData(driverRef.getText().toString() null);
-
-
-        Log.d("myTag","");
 
         Log.d("myTag", "driverRef: " +driverRef);
         historyListView = (ListView) findViewById(R.id.historyLV);
@@ -123,15 +116,6 @@ public class HistoryActivity extends AppCompatActivity{
                         Log.d("myTag", "List View Driver first name: " + dataSnapshot);
 
                         Log.d("myTag", "List View Driver first name: " + historyData);
-//
-////
-//                        Log.d("myTag", "Map " + dataSnapshot);
-//                        Map<String, Object> newPost = (Map<String, Object>) dataSnapshot.getValue();
-//                        Log.d("myTag", "Map " + dataSnapshot);
-
-
-                        //HistoryData historyData = new HistoryData(firstName.getFname().toString(), null);
-
                     }
 
                     @Override
@@ -176,7 +160,7 @@ public class HistoryActivity extends AppCompatActivity{
         //Connect to Google API
 //        googleApiClient.connect();
 
-        //Start MainActivity
+        //Check authentication on startup
         super.onStart();
         auth.addAuthStateListener(mAuthStateListener);
         Log.d("myTag", "onStart " + mAuthStateListener);
@@ -211,7 +195,11 @@ public class HistoryActivity extends AppCompatActivity{
                 return true;
             case R.id.home:
                 //Go to Verify page
-                startActivity(new Intent(HistoryActivity.this, MainActivity.class));
+//                Intent(new Intent(HistoryActivity.this, MainActivity.class));
+                Intent intent = new Intent();
+                setResult(RESULT_OK, intent);
+                finish();
+                Log.d("myTag","Gone to Verify");
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
