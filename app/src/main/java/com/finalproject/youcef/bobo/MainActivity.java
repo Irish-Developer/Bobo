@@ -2,6 +2,7 @@ package com.finalproject.youcef.bobo;
 
 
 import android.content.pm.PackageManager;
+import android.location.Geocoder;
 import android.location.Location;
 
 import android.os.Parcel;
@@ -10,11 +11,13 @@ import android.support.annotation.BoolRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.os.Bundle;
 import android.content.Intent;
+import android.Manifest;
 
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -27,14 +30,18 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.Date;
 import java.text.SimpleDateFormat;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.identity.intents.Address;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.firebase.database.ChildEventListener;
@@ -59,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private GoogleApiClient googleApiClient;
     private Location mLastLocation;
     private Boolean dataTrue;
+    private double mLatitude, mLongitude;
     Timer t = new Timer();
 
 
@@ -206,19 +214,19 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 ////                Log.d("dom", "worked");
 ////                t.cancel();
 //            }else {
-                Log.d("myTag", "There is NO Data");
-                a.removeEventListener((ChildEventListener) MainActivity.this);
-                Log.d("dom", "worked");
-                t.cancel();
-                MainActivity.this.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Log.d("Dom", "worked2");
-                        progressBar.setVisibility(View.GONE);
-                        Toast.makeText(MainActivity.this, "Not Registered", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
+            Log.d("myTag", "There is NO Data");
+            a.removeEventListener((ChildEventListener) MainActivity.this);
+            Log.d("dom", "worked");
+            t.cancel();
+            MainActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Log.d("Dom", "worked2");
+                    progressBar.setVisibility(View.GONE);
+                    Toast.makeText(MainActivity.this, "Not Registered", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 
     @Override
@@ -234,7 +242,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         Log.d("myTag", "Map " + dataSnapshot);
 
 //        Stops the timer from activating the "Not Registered" message to the user
-        if (dataSnapshot.hasChild("first_name")){
+        if (dataSnapshot.hasChild("first_name")) {
             t.cancel();
         }
         //Presents driver details
@@ -296,15 +304,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     //////////////////////////////////////////////////////////////////////////////////////When the YES button is pressed///////////////////////////////////////////////////////////////////////////////
     public void yesBtn(View v) {
 
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            return;
-        }
+        //Check if we have permission to use Location (without this there will be an error
+        int permissionCheck = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION);
+        Log.d("myTag","Check Permission: " +permissionCheck);
+
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
                 googleApiClient);
         if (mLastLocation != null) {
-            double mLatitude = mLastLocation.getLatitude();
-            double mLongitude = mLastLocation.getLongitude();
+            mLatitude = mLastLocation.getLatitude();
+            mLongitude = mLastLocation.getLongitude();
             Log.d("myTag", "Latitude: " + mLatitude);
             Log.d("myTag", "Longitude: " + mLongitude);
 
@@ -339,18 +348,19 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     Log.d("MyTag", "database works!");
 
                 }
+                recreate();
 
             }
 
+
         });
-//        startActivity(new Intent(MainActivity.this, ContactsActivity.class));
-//        finish();
+
+
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
-        sendIntent.putExtra(Intent.EXTRA_TEXT, "This is my text to send."+username);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, "http://maps.google.com/?q=<" + mLatitude + ">,<" +mLongitude+ ">");
         sendIntent.setType("text/plain");
         startActivity(sendIntent);
-
 
 
     }
@@ -374,6 +384,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         //Connect to Google API
         googleApiClient.connect();
 
+
         //Start MainActivity
         super.onStart();
         auth.addAuthStateListener(mAuthStateListener);
@@ -384,6 +395,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     public void onStop() {
         //Disconnect from Google API
         googleApiClient.disconnect();
+        Log.d("myTag", "Connected" + googleApiClient);
         super.onStop();
 
         //This listens to see if the user has signed out
@@ -411,20 +423,25 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     @Override
-    public void onConnected(@Nullable Bundle bundle) {
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            //Auto generated method for Permissions to use location
-            return;
-        }
-        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                googleApiClient);
-        if (mLastLocation != null) {
-           double mLatitude = mLastLocation.getLatitude();
-            double mLongitude = mLastLocation.getLongitude();
-            Log.d("myTag","Latitude: " +mLatitude);
-            Log.d("myTag","Longitude: " +mLongitude);
+    public void onConnected(Bundle connectionHint) {
 
-        }
+//        //Check if we have permission to use Location
+//        int permissionCheck = ContextCompat.checkSelfPermission(this,
+//                Manifest.permission.ACCESS_FINE_LOCATION);
+//        Log.d("myTag","Check Permission: " +permissionCheck);
+//
+//
+//            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+//                    googleApiClient);
+//            if (mLastLocation != null) {
+//                Log.d("myTag", "if mLastLocation: ");
+//                double mLatitude = mLastLocation.getLatitude();
+//                double mLongitude = mLastLocation.getLongitude();
+//                Log.d("myTag", "Latitude: " + mLatitude);
+//                Log.d("myTag", "Longitude: " + mLongitude);
+
+//            }
+//        }
 
     }
 
@@ -435,6 +452,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.d("myTag","Connection Failed: " +connectionResult.getErrorCode());
 
     }
 }
