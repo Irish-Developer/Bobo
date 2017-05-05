@@ -48,6 +48,10 @@ dependencies {
     compile 'com.google.android.gms:play-services:10.2.4'
     compile 'com.google.android.gms:play-services-location:10.2.4'
     compile 'com.google.android.gms:play-services-maps:10.2.4'
+    compile 'com.google.android.gms:play-services-identity:10.2.4'
+    compile 'com.google.android.gms:play-services-analytics:10.2.4'
+    compile 'com.google.android.gms:play-services-places:10.2.4'
+    compile 'com.google.android.gms:play-services-nearby:10.2.4'
 
 
 

@@ -12,6 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.os.ResultReceiver;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -38,12 +39,15 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.logging.Handler;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.identity.intents.Address;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
@@ -61,13 +65,103 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private EditText taxireg;
     private ProgressBar progressBar;
     private TextView taxiFname, taxiLname, licenseNum, taxiLexp, taxiRegNum, regOk, regNotOk, areYou;
-    private String historyId, Uid, username, firstName, lastName, lnumber, lexpirary, regNum, dateNow, timeNow;
+    private String historyId, Uid, username, firstName, lastName, lnumber, lexpirary, regNum, dateNow, timeNow, mAddress, mPlaceName;
     private Date date, time;
     private GoogleApiClient googleApiClient;
+    private Boolean haveLocPerm;
     private Location mLastLocation;
-    private Boolean dataTrue;
-    private double mLatitude, mLongitude;
+    private String Address = "Location:";
     Timer t = new Timer();
+
+    protected AddressReceiver mAddressReceiver;
+
+    protected void getAddressFromLoc(){
+        if(googleApiClient.isConnected() && haveLocPerm) {
+          try{
+              mLastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+          }
+          catch (SecurityException e){
+              Log.d("myTag", "No Location Access");
+          }
+          if(mLastLocation != null){
+              //Intent that will get the address of users location
+              Intent intent = new Intent(this, GeocodeService.class);
+              intent.setAction(Constants.ACTION_ADDRESS_FROM_LOC);
+              intent.putExtra(Constants.RECEIVER_KEY,mAddressReceiver);
+              intent.putExtra(Constants.LOCATION_KEY, mLastLocation);
+
+              startService(intent);
+          }
+        }
+    }
+
+    protected void getAddressFromName(String name){
+        if (name !=null && !name.isEmpty()){
+            // gets the location name
+            Intent intent = new Intent(this, GeocodeService.class);
+
+            intent.setAction(Constants.ACTION_LOC_FROM_ADDR);
+            intent.putExtra(Constants.RECEIVER_KEY, mAddressReceiver);
+            intent.putExtra(Constants.PLACE_NAME_KEY, name);
+
+            startActivity(intent);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+
+
+        if (requestCode == 1) {
+            if (grantResults.length>0 && grantResults [0] == PackageManager.PERMISSION_GRANTED) {
+
+                haveLocPerm = true;
+            }
+        }
+    }
+
+
+    //Automatically generated methods for Google Play Servicess
+    @Override
+    public void onConnected(Bundle connectionHint) {
+
+        int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
+
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+        } else {
+            haveLocPerm = true;
+        }
+//        //Check if we have permission to use Location
+//        int permissionCheck = ContextCompat.checkSelfPermission(this,
+//                Manifest.permission.ACCESS_FINE_LOCATION);
+//        Log.d("myTag","Check Permission: " +permissionCheck);
+//
+//
+//            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+//                    googleApiClient);
+//            if (mLastLocation != null) {
+//                Log.d("myTag", "if mLastLocation: ");
+//                double mLatitude = mLastLocation.getLatitude();
+//                double mLongitude = mLastLocation.getLongitude();
+//                Log.d("myTag", "Latitude: " + mLatitude);
+//                Log.d("myTag", "Longitude: " + mLongitude);
+
+//            }
+//        }
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int cause) {
+        googleApiClient.connect();
+    }
+
+    @Override
+    public void onConnectionFailed( ConnectionResult connectionResult) {
+        Log.d("myTag","Connection Failed: " +connectionResult.getErrorCode());
+
+    }
 
 
     //////////using classes from the FirebaseDatabase API //////////
@@ -103,14 +197,22 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
 
         // Create an instance of GoogleAPIClient.
-        if (googleApiClient == null) {
-            googleApiClient = new GoogleApiClient.Builder(this)
+//        if (googleApiClient == null) {
+//            googleApiClient = new GoogleApiClient.Builder(this)
+//                    .addConnectionCallbacks(this)
+//                    .addOnConnectionFailedListener(this)
+//                    .addApi(LocationServices.API)
+//                    .build();
+//            Log.d("myTag", "Google API Connection: " + googleApiClient);
+//        }
+
+        googleApiClient = new GoogleApiClient.Builder(this)
                     .addConnectionCallbacks(this)
                     .addOnConnectionFailedListener(this)
                     .addApi(LocationServices.API)
                     .build();
-            Log.d("myTag", "Google API Connection: " + googleApiClient);
-        }
+                    Log.d("myTag", "Google API Connection: " + googleApiClient);
+
 
         //Get the current date
         date = new Date();
@@ -138,15 +240,24 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         regOk = (TextView) findViewById(R.id.isRegTF);
         regNotOk = (TextView) findViewById(R.id.notRegTf);
         areYou = (TextView) findViewById(R.id.questionTF);
+        mLastLocation = null;
+        haveLocPerm = false;
+        mAddress = "";
+
+        mAddressReceiver = new AddressReceiver(new android.os.Handler());
 
 
-        //Calculate users age
+
+        // TODO Calculate users age
 
 
         //Check button
         mCheckButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //Activates the gtAddressFromLoc method when the Continue button is pressed
+                 getAddressFromLoc();
+
 
                 //Check to make sure the EditText is not empty
                 String userInput = taxireg.getText().toString().trim();
@@ -168,17 +279,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 t = new Timer();
                 t.schedule(new Task(b), 6000, 1);
 
-//                if (dataTrue == true) {
-//                    t.cancel();
-//                }
-
                 progressBar.setVisibility(View.VISIBLE);
 
 
             }
 
         });
-
 
         // this listener will be called when there is change in firebase user session - https://firebase.google.com/docs/auth/android/password-auth
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
@@ -209,11 +315,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
 
         public void run() {
-//            if (dataTrue == true) {
-////                a.removeEventListener((ChildEventListener) MainActivity.this);
-////                Log.d("dom", "worked");
-////                t.cancel();
-//            }else {
             Log.d("myTag", "There is NO Data");
             a.removeEventListener((ChildEventListener) MainActivity.this);
             Log.d("dom", "worked");
@@ -305,60 +406,73 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     public void yesBtn(View v) {
 
         //Check if we have permission to use Location (without this there will be an error
-        int permissionCheck = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION);
-        Log.d("myTag","Check Permission: " +permissionCheck);
+//        int permissionCheck = ContextCompat.checkSelfPermission(this,
+//                Manifest.permission.ACCESS_FINE_LOCATION);
+//        Log.d("myTag","Check Permission: " +permissionCheck);
 
-        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                googleApiClient);
-        if (mLastLocation != null) {
-            mLatitude = mLastLocation.getLatitude();
-            mLongitude = mLastLocation.getLongitude();
-            Log.d("myTag", "Latitude: " + mLatitude);
-            Log.d("myTag", "Longitude: " + mLongitude);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
 
-            //Storing location to history node
-            userRef.child("history").child(historyId).child("longitude").setValue(mLongitude);
-            userRef.child("history").child(historyId).child("latitude").setValue(mLatitude);
-        }
-
-        //Storing taxi driver details to History table / node
-        Log.d("myTag", "Send to History " + firstName);
-        Log.d("myTag", "first name: ");
-        userRef.child("history").child(historyId).child("driver_lname").setValue(lastName);
-        userRef.child("history").child(historyId).child("license_number").setValue(lnumber);
-        userRef.child("history").child(historyId).child("license_expDate").setValue(lexpirary);
-        userRef.child("history").child(historyId).child("reg_number").setValue(regNum);
-
-        userRef.child("history").child(historyId).child("date").setValue(dateNow);
-        userRef.child("history").child(historyId).child("time").setValue(timeNow);
-        Log.d("myTag", "Sent to History");
-
-        //Confirmation from Firebase Realtime database of upload success
-        DatabaseReference dataRef = userRef.child("history").child(historyId).child("driver_fname");
-        dataRef.setValue(firstName, new DatabaseReference.CompletionListener() {
-            @Override
-            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                if (databaseError != null) {
-                    Log.d("MyTag", "databaseError");
-                    Toast.makeText(MainActivity.this, "Data update failed", Toast.LENGTH_SHORT).show();
-                } else {
-
-                    Toast.makeText(MainActivity.this, "Stored to history", Toast.LENGTH_SHORT).show();
-                    Log.d("MyTag", "database works!");
-
-                }
-                recreate();
-
+//            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+//                    googleApiClient);
+//            if (mLastLocation != null) {
+//                mLatitude = mLastLocation.getLatitude();
+//                mLongitude = mLastLocation.getLongitude();
+//                Log.d("myTag", "Latitude: " + mLatitude);
+//                Log.d("myTag", "Longitude: " + mLongitude);
+//            }
+        }else {
+                Toast.makeText(MainActivity.this, "Need Location permission", Toast.LENGTH_SHORT).show();
             }
 
+//            mAddress.setText("First Name: " + newPost.get("first_name").toString());
 
-        });
+
+            //Storing location to history node
+//            userRef.child("history").child(historyId).child("longitude").setValue(mLongitude);
+//            userRef.child("history").child(historyId).child("latitude").setValue(mLatitude);
+
+
+            //Storing taxi driver details to History table / node
+            Log.d("myTag", "Send to History " + firstName);
+            Log.d("myTag", "first name: ");
+            userRef.child("history").child(historyId).child("driver_lname").setValue(lastName);
+            userRef.child("history").child(historyId).child("license_number").setValue(lnumber);
+            userRef.child("history").child(historyId).child("license_expDate").setValue(lexpirary);
+            userRef.child("history").child(historyId).child("reg_number").setValue(regNum);
+
+            userRef.child("history").child(historyId).child("date").setValue(dateNow);
+            userRef.child("history").child(historyId).child("time").setValue(timeNow);
+            Log.d("myTag", "Sent to History");
+
+            //Confirmation from Firebase Realtime database of upload success
+            DatabaseReference dataRef = userRef.child("history").child(historyId).child("driver_fname");
+            dataRef.setValue(firstName, new DatabaseReference.CompletionListener() {
+                @Override
+                public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                    if (databaseError != null) {
+                        Log.d("MyTag", "databaseError");
+                        Toast.makeText(MainActivity.this, "Data update failed", Toast.LENGTH_SHORT).show();
+                    } else {
+
+                        Toast.makeText(MainActivity.this, "Stored to history", Toast.LENGTH_SHORT).show();
+                        Log.d("MyTag", "database works!");
+
+                    }
+                    recreate();
+
+                }
+
+
+            });
+
+
 
 
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
-        sendIntent.putExtra(Intent.EXTRA_TEXT, "http://maps.google.com/?q=<" + mLatitude + ">,<" +mLongitude+ ">");
+        sendIntent.putExtra(Intent.EXTRA_TEXT, Address + mAddress + firstName);
+//            sendIntent.putExtra(Intent.EXTRA_TEXT, "Address" + mAddress);
         sendIntent.setType("text/plain");
         startActivity(sendIntent);
 
@@ -421,38 +535,17 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 return super.onOptionsItemSelected(item);
         }
     }
+    class AddressReceiver extends ResultReceiver{
+        public AddressReceiver (android.os.Handler handler) { super(handler);}
 
-    @Override
-    public void onConnected(Bundle connectionHint) {
 
-//        //Check if we have permission to use Location
-//        int permissionCheck = ContextCompat.checkSelfPermission(this,
-//                Manifest.permission.ACCESS_FINE_LOCATION);
-//        Log.d("myTag","Check Permission: " +permissionCheck);
-//
-//
-//            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-//                    googleApiClient);
-//            if (mLastLocation != null) {
-//                Log.d("myTag", "if mLastLocation: ");
-//                double mLatitude = mLastLocation.getLatitude();
-//                double mLongitude = mLastLocation.getLongitude();
-//                Log.d("myTag", "Latitude: " + mLatitude);
-//                Log.d("myTag", "Longitude: " + mLongitude);
-
-//            }
-//        }
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData){
+            //get address or display error message (from intent)
+            mAddress = resultData.getString(Constants.ADDRESS_RESULT_KEY);
+            Log.d("myTag","Address: -- " +mAddress);
+        }
 
     }
 
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Log.d("myTag","Connection Failed: " +connectionResult.getErrorCode());
-
-    }
 }
