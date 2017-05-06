@@ -76,24 +76,25 @@ public class GeocodeService extends IntentService {
 
             // Gets the first line of address
             for(int i = 0; i < addr.getMaxAddressLineIndex(); i++) {
-                addrString += addr.getAddressLine(i) + "\n";
+                addrString += addr.getAddressLine(i) + "\n     "; //The spaces are used to indent the Address
             }
             //Get addition address information
-            if (addr.getCountryName() !=null) addrString += addr.getCountryName() + "\n";
+            if (addr.getCountryName() !=null) addrString += addr.getCountryName() + "\n     ";
 
-            if (action.equals(Constants.ACTION_ADDRESS_FROM_LOC)){
-                if (addr.getLocality() != null) addrString += addr.getLocality() + "\n";
-
-                if (addr.getFeatureName() != null) {
-                    addrString += addr.getFeatureName() + "\n";
-                }
-            }else if (action.equals(Constants.ACTION_LOC_FROM_ADDR)){
-                if (addr.hasLatitude()) addrString += String.format("Lat: %f", addr.getLatitude()) + "\n";
-
-                if (addr.hasLongitude()){
-                    addrString += String.format("Lat: %f", addr.getLongitude()) + "\n";
-                }
-            }
+//            if (action.equals(Constants.ACTION_ADDRESS_FROM_LOC)){
+//                if (addr.getLocality() != null) addrString += addr.getLocality() + "\n     ";
+//
+//                if (addr.getFeatureName() != null) {
+//                    addrString += addr.getFeatureName() + "\n     ";
+//                }
+//            }
+//            else if (action.equals(Constants.ACTION_LOC_FROM_ADDR)){
+//                if (addr.hasLatitude()) addrString += String.format("Lat: %f", addr.getLatitude()) + "\n";
+//
+//                if (addr.hasLongitude()){
+//                    addrString += String.format("Lon: %f", addr.getLongitude()) + "\n";
+//                }
+//            }
             Log.d("myTag","Address Found:)");
             deliverResult(Constants.RESULT_SUCCESS, addrString);
 

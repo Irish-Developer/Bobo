@@ -52,10 +52,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
-        android:id="@+id/textView2"
+        android:id="@+id/driverFname"
         android:text="Please enter one of the following:"
         android:layout_alignParentTop="true"
-        android:layout_alignLeft="@+id/textView3"
+        android:layout_alignLeft="@+id/checkTF"
         android:layout_alignStart="@+id/textView3" />
 
     <TextView
@@ -63,9 +63,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/textView3"
-        android:layout_below="@+id/textView2"
-        android:layout_alignLeft="@+id/textView4"
-        android:layout_alignStart="@+id/textView4" />
+        android:layout_below="@+id/driverFname"
+        android:layout_alignLeft="@+id/checkTF"
+        android:layout_alignStart="@+id/checkTF" />
 
     <TextView
         android:text=""
@@ -119,6 +119,20 @@
         android:onClick="noBtn"/>
 
     <Button
+        android:id="@+id/noBtn2"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:text="NO"
+        android:background="@color/colorDanger"
+        android:textColor="@android:color/background_light"
+        android:visibility="gone"
+        android:layout_alignBottom="@+id/yesBtn2"
+        android:layout_alignLeft="@+id/textView7"
+        android:layout_alignStart="@+id/textView7"
+        android:layout_alignTop="@+id/yesBtn2"
+        android:onClick="noBtn"/>
+
+    <Button
         android:id="@+id/yesBtn"
         android:layout_width="wrap_content"
         android:layout_height="40dp"
@@ -131,6 +145,20 @@
         android:layout_alignRight="@+id/checkTF"
         android:layout_alignEnd="@+id/checkTF"
         android:onClick="yesBtn"/>
+
+    <Button
+        android:id="@+id/yesBtn2"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:text="YES"
+        android:layout_marginBottom="26dp"
+        android:visibility="gone"
+        android:background="@color/colorPrimary"
+        android:textColor="@android:color/background_light"
+        android:layout_above="@+id/textView"
+        android:layout_alignRight="@+id/checkTF"
+        android:layout_alignEnd="@+id/checkTF"
+        android:onClick="yesBtn2"/>
 
     <TextView
         android:id="@+id/isRegTF"

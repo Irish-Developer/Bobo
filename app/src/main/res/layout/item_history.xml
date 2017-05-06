@@ -1,28 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="15dp">
+
+    <TextView
+        android:id="@+id/hisDateTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Date"
+        android:paddingRight="10dp"
+        android:layout_below="@+id/hisRegTV"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:id="@+id/driverLnameTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Name"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/driverNameTV"
+        android:layout_toEndOf="@+id/driverNameTV"
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="11dp" />
 
     <TextView
         android:id="@+id/driverNameTV"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Driver"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
     <TextView
-        android:id="@+id/dateTV"
+        android:id="@+id/licenseTV"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Date"
-        android:textAppearance="?android:attr/textAppearanceSmall"/>
+        android:text="License"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:layout_marginTop="37dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignLeft="@+id/hisRegTV"
+        android:layout_alignStart="@+id/hisRegTV" />
 
     <TextView
-        android:id="@+id/textView12"
+        android:id="@+id/textView14"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Time" />
+        android:text="License: "
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignTop="@+id/licenseTV"
+        android:layout_above="@+id/hisRegTV" />
+
+    <TextView
+        android:id="@+id/hisTimeTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Time"
+        android:layout_below="@+id/hisRegTV"
+        android:layout_alignLeft="@+id/hisRegTV"
+        android:layout_alignStart="@+id/hisRegTV" />
+
+    <TextView
+        android:id="@+id/hisRegTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Reg Plate"
+        android:layout_marginLeft="25dp"
+        android:layout_marginStart="25dp"
+        android:layout_below="@+id/licenseTV"
+        android:layout_toRightOf="@+id/textView15"
+        android:layout_toEndOf="@+id/textView15" />
+
+    <TextView
+        android:id="@+id/textView15"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/textView14"
+        android:text="Reg Plate:" />
 
 
-</LinearLayout>
+</RelativeLayout>

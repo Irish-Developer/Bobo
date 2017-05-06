@@ -53,6 +53,7 @@ public class LoginActivity extends AppCompatActivity {
         registerLink = (Button) findViewById(R.id.signupBtn);
         loginBtn = (Button) findViewById(R.id.loginBtn);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        String passPattern = "((?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{8,30})";
 
         registerLink.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,7 +82,8 @@ public class LoginActivity extends AppCompatActivity {
                 progressBar.setVisibility(View.VISIBLE);                                                            //When the email & password have been entered and the Login button has been pressed, display progress bar
 
                 //Check the user input with FirebaseAuth to authenticate user
-                fireAuth.signInWithEmailAndPassword(emailInput, password).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
+                fireAuth.signInWithEmailAndPassword(emailInput, password).addOnCompleteListener(LoginActivity.this,
+                        new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         Log.d("myTag", "Login user " + email + pass);
@@ -89,14 +91,15 @@ public class LoginActivity extends AppCompatActivity {
 
                         if (!task.isSuccessful()) {
                             if (pass.length() < 8) {                                                                //Minimum length of password characters is 8
-                                pass.setError("Password to short, enter a minimum of 8 characters");                //If something is wrong, let the user know via toast
+                                pass.setError("Password is not valid");                //If something is wrong, let the user know via toast
                             } else {
-                                Toast.makeText(LoginActivity.this, "Something wrong! Check your email address", Toast.LENGTH_LONG).show();
+                                Toast.makeText(LoginActivity.this, "Email address not valid", Toast.LENGTH_SHORT).show();
                             }
                         } else {                                                                                    //If authentication was successful then take the user to MainActivity
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                             startActivity(intent);
-                            finish();
+
+                            finish(); //close activity
                         }
 
 

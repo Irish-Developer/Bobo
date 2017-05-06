@@ -61,20 +61,27 @@ import com.google.firebase.database.ValueEventListener;
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ValueEventListener, ChildEventListener {
 
-    private Button mCheckButton, noButton, yesButton;
+    //Declaring variables
+    private Button mCheckButton, noButton, yesButton, usingNotReg, noButton2;
     private EditText taxireg;
     private ProgressBar progressBar;
+    //Declaring TextView & Taxi driver
     private TextView taxiFname, taxiLname, licenseNum, taxiLexp, taxiRegNum, regOk, regNotOk, areYou;
-    private String historyId, Uid, username, firstName, lastName, lnumber, lexpirary, regNum, dateNow, timeNow, mAddress, mPlaceName;
+    //Declaring History data
+    private String historyId, Uid, firstName, lastName, lnumber, lexpirary, regNum, dateNow, timeNow, mAddress, mPlaceName, registered;
+    private String taxiNumber;
+    //Time and date
     private Date date, time;
+    //User
+    private String userFname, userLname;
     private GoogleApiClient googleApiClient;
     private Boolean haveLocPerm;
     private Location mLastLocation;
-    private String Address = "Location:";
     Timer t = new Timer();
 
     protected AddressReceiver mAddressReceiver;
 
+    //The method is activateed
     protected void getAddressFromLoc(){
         if(googleApiClient.isConnected() && haveLocPerm) {
           try{
@@ -111,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
 
-
+        //Checks to make sure the Bobo has permission
         if (requestCode == 1) {
             if (grantResults.length>0 && grantResults [0] == PackageManager.PERMISSION_GRANTED) {
 
@@ -120,35 +127,19 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
     }
 
-
     //Automatically generated methods for Google Play Servicess
     @Override
     public void onConnected(Bundle connectionHint) {
-
+        //Check to see if Bobo has permission to access location
         int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
 
+        //If not then ask for permission
         if (permissionCheck != PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, 1);
         } else {
+            //Else set have location boolean to true
             haveLocPerm = true;
         }
-//        //Check if we have permission to use Location
-//        int permissionCheck = ContextCompat.checkSelfPermission(this,
-//                Manifest.permission.ACCESS_FINE_LOCATION);
-//        Log.d("myTag","Check Permission: " +permissionCheck);
-//
-//
-//            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-//                    googleApiClient);
-//            if (mLastLocation != null) {
-//                Log.d("myTag", "if mLastLocation: ");
-//                double mLatitude = mLastLocation.getLatitude();
-//                double mLongitude = mLastLocation.getLongitude();
-//                Log.d("myTag", "Latitude: " + mLatitude);
-//                Log.d("myTag", "Longitude: " + mLongitude);
-
-//            }
-//        }
 
     }
 
@@ -170,7 +161,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     //Entry point for the app to access the database
     private FirebaseDatabase mFirebaseDatabase;
     //DatabaseReference object is a class that references a specific part of the database
-    private DatabaseReference mTaxiDatabaseReference, userRef;
+    private DatabaseReference mTaxiDatabaseReference, userRef, userNameRef;
     //Authentication Instance variables
     private FirebaseAuth auth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
@@ -189,23 +180,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
 
         Log.d("myTag", "FireAuth user ID" + Uid);
-
+        userNameRef = mFirebaseDatabase.getReference().child("users").child(Uid).child("name");
         userRef = FirebaseDatabase.getInstance().getReference("users").child(Uid);
         historyId = userRef.push().getKey();
-        username = userRef.child("name").child("fname").toString();
-        Log.d("myTag", "username: " + username);
+//        username = userRef.child("name").child("fname").toString();
+//        Log.d("myTag", "username: " + username);
 
 
         // Create an instance of GoogleAPIClient.
-//        if (googleApiClient == null) {
-//            googleApiClient = new GoogleApiClient.Builder(this)
-//                    .addConnectionCallbacks(this)
-//                    .addOnConnectionFailedListener(this)
-//                    .addApi(LocationServices.API)
-//                    .build();
-//            Log.d("myTag", "Google API Connection: " + googleApiClient);
-//        }
-
         googleApiClient = new GoogleApiClient.Builder(this)
                     .addConnectionCallbacks(this)
                     .addOnConnectionFailedListener(this)
@@ -228,7 +210,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         //Retrieving values from edit text & button
         taxireg = (EditText) findViewById(R.id.checkTF);
-        taxiFname = (TextView) findViewById(R.id.textView2);
+        taxiFname = (TextView) findViewById(R.id.driverFname);
         taxiLname = (TextView) findViewById(R.id.textView3);
         licenseNum = (TextView) findViewById(R.id.textView4);
         taxiLexp = (TextView) findViewById(R.id.textView6);
@@ -236,7 +218,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         mCheckButton = (Button) findViewById(R.id.button);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         noButton = (Button) findViewById(R.id.noBtn);
+        noButton2 = (Button) findViewById(R.id.noBtn2);
         yesButton = (Button) findViewById(R.id.yesBtn);
+        usingNotReg = (Button) findViewById(R.id.yesBtn2);
         regOk = (TextView) findViewById(R.id.isRegTF);
         regNotOk = (TextView) findViewById(R.id.notRegTf);
         areYou = (TextView) findViewById(R.id.questionTF);
@@ -246,9 +230,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         mAddressReceiver = new AddressReceiver(new android.os.Handler());
 
+//        Retrieving user details
+
 
 
         // TODO Calculate users age
+
+
 
 
         //Check button
@@ -257,7 +245,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             public void onClick(View v) {
                 //Activates the gtAddressFromLoc method when the Continue button is pressed
                  getAddressFromLoc();
-
 
                 //Check to make sure the EditText is not empty
                 String userInput = taxireg.getText().toString().trim();
@@ -280,10 +267,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 t.schedule(new Task(b), 6000, 1);
 
                 progressBar.setVisibility(View.VISIBLE);
-
-
             }
-
         });
 
         // this listener will be called when there is change in firebase user session - https://firebase.google.com/docs/auth/android/password-auth
@@ -291,22 +275,31 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
-
-                Log.d("myTag", "StateListener user ID");
                 if (user == null) {                                                             //User is signed out
-
-                    Log.d("MyTag", "User session has ended");
                     startActivity(new Intent(MainActivity.this, LoginActivity.class));          //Go to Login screen
                     Log.d("MyTag", "Signing out user");
                     finish();
                 }
             }
         };
+
+        //Gets the username
+        userNameRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Map<String, Object> post = (Map<String, Object>) dataSnapshot.getValue();
+                userFname = post.get("fname").toString();
+                userLname = post.get("lname").toString();
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                //Auto generated. Activated if there is authentication errors
+            }
+        });
     }
 
 
     class Task extends TimerTask {
-
         private final Query a;
 
         public Task(Query a) {
@@ -315,16 +308,42 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
 
         public void run() {
-            Log.d("myTag", "There is NO Data");
+            //Timer stops after 5 seconds and removes event listener otherwise the query will keep running
             a.removeEventListener((ChildEventListener) MainActivity.this);
-            Log.d("dom", "worked");
             t.cancel();
+            //Rerun the event listener
             MainActivity.this.runOnUiThread(new Runnable() {
+
+                //Displaying NOT REGISTERED details and option buttons
                 @Override
                 public void run() {
-                    Log.d("Dom", "worked2");
+                    //Stop progressbar
                     progressBar.setVisibility(View.GONE);
                     Toast.makeText(MainActivity.this, "Not Registered", Toast.LENGTH_SHORT).show();
+
+                    taxiNumber = taxireg.getText().toString().trim();
+
+                    taxiRegNum.setText("Taxi Number: " + taxiNumber.toString());
+
+                    //Insert null values into the empty fields
+                    taxiFname.setText("Name : " + "NOT REGISTERED".toString());
+                    taxiLname.setText("");
+                    licenseNum.setText("");
+                    taxiLexp.setText("");
+
+
+                    registered = "NOT REGISTERED";
+                    Log.d("myTag", "Is " + registered);
+
+
+                    //Displays buttons and "Registered" message
+                    noButton2.setVisibility(View.VISIBLE);
+                    usingNotReg.setVisibility(View.VISIBLE);
+                    regNotOk.setVisibility(View.VISIBLE);
+                    areYou.setVisibility(View.VISIBLE);
+
+                    noButton.setVisibility(View.GONE);
+                    regOk.setVisibility(View.GONE);
                 }
             });
         }
@@ -353,7 +372,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         taxiLexp.setText("License Expiry Date : " + newPost.get("license_exp").toString());
         taxiRegNum.setText("Car Reg Number : " + newPost.get("car_reg").toString());
 
-        //Temporary store details so they be stored in history and brought over to next activity
+        //Temporary store details so they be stored in history and sent to contact through WhatsApp
         firstName = newPost.get("first_name").toString();
         lastName = newPost.get("last_name").toString();
         lnumber = newPost.get("license_no").toString();
@@ -364,74 +383,45 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         //Stops Progress bar
         progressBar.setVisibility(View.GONE);
 
+        registered = "REGISTERED".toString();
+        Log.d("myTag", "Is: " + registered);
+
+
         //Displays buttons and "Registered" message
         noButton.setVisibility(View.VISIBLE);
         yesButton.setVisibility(View.VISIBLE);
         regOk.setVisibility(View.VISIBLE);
         areYou.setVisibility(View.VISIBLE);
-
     }
 
     @Override
     public void onChildChanged(DataSnapshot dataSnapshot, String s) {
         Log.d("myTag", "onClickChanged " + dataSnapshot);
-
     }
 
     @Override
     public void onChildRemoved(DataSnapshot dataSnapshot) {
-
     }
 
     @Override
     public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
     }
 
     @Override
     public void onCancelled(DatabaseError databaseError) {
-
     }
 
-    //Refreshes the Validation page once the NO button is pressed
+    //////////////////////////////////////////////////////////////////////////////////////When the NO button is pressed///////////////////////////////////////////////////////////////////////////////
+
+    //This method is called for noBtn and noBtn as they are bought using this for their onClickListener
     public void noBtn(View v) {
         recreate();
-
         //Clear EditText field
         taxireg.setText("");
     }
 
-
     //////////////////////////////////////////////////////////////////////////////////////When the YES button is pressed///////////////////////////////////////////////////////////////////////////////
     public void yesBtn(View v) {
-
-        //Check if we have permission to use Location (without this there will be an error
-//        int permissionCheck = ContextCompat.checkSelfPermission(this,
-//                Manifest.permission.ACCESS_FINE_LOCATION);
-//        Log.d("myTag","Check Permission: " +permissionCheck);
-
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-
-//            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-//                    googleApiClient);
-//            if (mLastLocation != null) {
-//                mLatitude = mLastLocation.getLatitude();
-//                mLongitude = mLastLocation.getLongitude();
-//                Log.d("myTag", "Latitude: " + mLatitude);
-//                Log.d("myTag", "Longitude: " + mLongitude);
-//            }
-        }else {
-                Toast.makeText(MainActivity.this, "Need Location permission", Toast.LENGTH_SHORT).show();
-            }
-
-//            mAddress.setText("First Name: " + newPost.get("first_name").toString());
-
-
-            //Storing location to history node
-//            userRef.child("history").child(historyId).child("longitude").setValue(mLongitude);
-//            userRef.child("history").child(historyId).child("latitude").setValue(mLatitude);
-
 
             //Storing taxi driver details to History table / node
             Log.d("myTag", "Send to History " + firstName);
@@ -457,28 +447,68 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                         Toast.makeText(MainActivity.this, "Stored to history", Toast.LENGTH_SHORT).show();
                         Log.d("MyTag", "database works!");
-
                     }
                     recreate();
-
                 }
 
 
             });
 
 
-
-
+        //This intent lets the user send their message to there contacts
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
-        sendIntent.putExtra(Intent.EXTRA_TEXT, Address + mAddress + firstName);
-//            sendIntent.putExtra(Intent.EXTRA_TEXT, "Address" + mAddress);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, userFname +" " + userLname + " is using a taxi.\n\n" +"Driver details: \n Name: " +firstName + " "+lastName +"\n Reg No: " +regNum+
+                "\n Licence No: " + lnumber+ "\n\nPick up location:\n     " +mAddress);
         sendIntent.setType("text/plain");
         startActivity(sendIntent);
+    }//End of yesBtn (Tax is REGISTERED
 
 
-    }
+    //////////////////////////////////////////////////////////////////////////////////////When the YES button (for NOT REGISTERED) is pressed///////////////////////////////////////////////////////////////////////////////
+    public void yesBtn2(View v) {
 
+        //Storing taxi driver details to History table / node
+        Log.d("myTag", "Send to History " );
+        Log.d("myTag", "first name: ");
+        userRef.child("history").child(historyId).child("driver_lname").setValue("");
+        userRef.child("history").child(historyId).child("license_number").setValue("");
+        userRef.child("history").child(historyId).child("license_expDate").setValue("");
+        userRef.child("history").child(historyId).child("reg_number").setValue(taxiNumber);
+//        userRef.child("history").child(historyId).child("is_Registered").setValue("NOT ");
+
+
+        userRef.child("history").child(historyId).child("date").setValue(dateNow);
+        userRef.child("history").child(historyId).child("time").setValue(timeNow);
+        Log.d("myTag", "Sent to History");
+
+        //Confirmation from Firebase Realtime database of upload success
+        DatabaseReference dataRef = userRef.child("history").child(historyId).child("driver_fname");
+        dataRef.setValue("NOT REGISTERED", new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                if (databaseError != null) {
+                    Log.d("MyTag", "databaseError");
+                    Toast.makeText(MainActivity.this, "Data update failed", Toast.LENGTH_SHORT).show();
+                } else {
+
+                    Toast.makeText(MainActivity.this, "Stored to history", Toast.LENGTH_SHORT).show();
+                    Log.d("MyTag", "database works!");
+                }
+                recreate();
+            }
+
+
+        });
+
+
+        //This intent lets the user send their message to there contacts
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, userFname +" " + userLname + " is using a taxi.\n\n" +"Driver details: \n\n      NOT REGISTERED " + "\n\n  Reg Plate No: " +taxiNumber+"\n\nPick up location:\n     " +mAddress);
+        sendIntent.setType("text/plain");
+        startActivity(sendIntent);
+    }//End of yesBtn
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
