@@ -34,6 +34,7 @@ public class GeocodeService extends IntentService {
         //get location and receiver from the intent
         mReceiver = intent.getParcelableExtra(Constants.RECEIVER_KEY);
         final String action = intent.getAction();
+
         Geocoder geocoder = new Geocoder(this, Locale.getDefault());
 
         Location location = null;
@@ -81,20 +82,6 @@ public class GeocodeService extends IntentService {
             //Get addition address information
             if (addr.getCountryName() !=null) addrString += addr.getCountryName() + "\n     ";
 
-//            if (action.equals(Constants.ACTION_ADDRESS_FROM_LOC)){
-//                if (addr.getLocality() != null) addrString += addr.getLocality() + "\n     ";
-//
-//                if (addr.getFeatureName() != null) {
-//                    addrString += addr.getFeatureName() + "\n     ";
-//                }
-//            }
-//            else if (action.equals(Constants.ACTION_LOC_FROM_ADDR)){
-//                if (addr.hasLatitude()) addrString += String.format("Lat: %f", addr.getLatitude()) + "\n";
-//
-//                if (addr.hasLongitude()){
-//                    addrString += String.format("Lon: %f", addr.getLongitude()) + "\n";
-//                }
-//            }
             Log.d("myTag","Address Found:)");
             deliverResult(Constants.RESULT_SUCCESS, addrString);
 

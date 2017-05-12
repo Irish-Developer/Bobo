@@ -12,6 +12,7 @@ public class HistoryData {
 
     double longitude, latitude ;
 
+    //This is needed for DataSanapshot.getValue(Historydata.class)
     public HistoryData(){
 
     }

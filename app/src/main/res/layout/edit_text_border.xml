@@ -1,7 +1,11 @@
 
     <!-- create an xml layout file and add this for edit_text_border -->
+
+        <!--REFERENCE-->
     <!-- Reference for TextEdit border http://www.android-examples.com/add-rounded-corners-border-to-edittext-android-using-xml/ -->
-<selector xmlns:android="http://schemas.android.com/apk/res/android" android:orientation="vertical" android:layout_width="match_parent"
+
+
+    <selector xmlns:android="http://schemas.android.com/apk/res/android" android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 <item>
     <shape android:shape="rectangle">

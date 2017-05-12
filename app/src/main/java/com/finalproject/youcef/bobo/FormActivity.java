@@ -56,6 +56,7 @@ public class FormActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_userform);
 
+        //Getting Firebase Authenticate instance
         auth = FirebaseAuth.getInstance();
         Uid = auth.getCurrentUser().getUid();
 
