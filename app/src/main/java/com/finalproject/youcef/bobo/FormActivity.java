@@ -1,15 +1,12 @@
 package com.finalproject.youcef.bobo;
 
 /**************************************************************************************************************************
- * References for
- * Regular expression:
+ * References
  *
- * Email:       @uthor= Rahul Baradia | Website= StackOverflow | URL= http://stackoverflow.com/questions/12947620/email-address-validation-in-android-on-edittext
- * Date:        @uthor= Dany Lauener | Website=Regular Expression Language | URL= http://www.regexlib.com/(A(c6LgOXWtNZyRBnekhSOqOgnJA18Zo2E_NhvTCKNFATD_7vm7lCwOZdwdgLJJKu8h5Lyt9oTP6411PFuAU97m_19qgpxizUCI8NU8d5YTuFE0f8ngkDsNSfTsPVPunrUomyUI-a3qwL_ihigV1lZ_8wQ_BQ-uRacmKbtG-hIoj_9jua-luv5s64SbyjML5Qot0))/DisplayPatterns.aspx?cattabindex=5&categoryId=5
+ * @uthor= Rahul Baradia | Website= StackOverflow | URL= http://stackoverflow.com/questions/12947620/email-address-validation-in-android-on-edittext
+ * @uthor= Dany Lauener | Website=Regular Expression Language | URL= http://www.regexlib.com/(A(c6LgOXWtNZyRBnekhSOqOgnJA18Zo2E_NhvTCKNFATD_7vm7lCwOZdwdgLJJKu8h5Lyt9oTP6411PFuAU97m_19qgpxizUCI8NU8d5YTuFE0f8ngkDsNSfTsPVPunrUomyUI-a3qwL_ihigV1lZ_8wQ_BQ-uRacmKbtG-hIoj_9jua-luv5s64SbyjML5Qot0))/DisplayPatterns.aspx?cattabindex=5&categoryId=5
+ * @uthor= anoop | Website= Stackoverflow | URL= http://stackoverflow.com/questions/12418324/android-move-cursor-from-one-edittext-to-another-one-if-click-any-letter-in-fiel
  *
- * TextWatcher:
- *
- *  @uthor= anoop | Website= Stackoverflow | URL= http://stackoverflow.com/questions/12418324/android-move-cursor-from-one-edittext-to-another-one-if-click-any-letter-in-fiel
  *******************************************************************************************************************************/
 
 import android.content.Intent;
@@ -186,12 +183,10 @@ public class FormActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                         if (databaseError != null) {
-                            Log.d("MyTag", "databaseError");
                             Toast.makeText(FormActivity.this, "Data update failed", Toast.LENGTH_SHORT).show();
                         } else {
                             startActivity(new Intent(FormActivity.this, MainActivity.class));
                             Toast.makeText(FormActivity.this, "Welcome to Bobo!", Toast.LENGTH_SHORT).show();
-                            Log.d("MyTag", "database works!");
                             finish();
                         }
 
@@ -212,7 +207,6 @@ public class FormActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 Integer length = dobDay.getText().length();
-                Log.d("myTag", "TextChanged");
                 if (length >= 2) {
                     dobMonth.requestFocus();
                 }
@@ -233,7 +227,6 @@ public class FormActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 Integer length = dobMonth.getText().length();
-                Log.d("myTag", "TextChanged");
                 if (length >= 2) {
                     dobYear.requestFocus();
                 }
@@ -253,7 +246,6 @@ public class FormActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 Integer length = dobYear.getText().length();
-                Log.d("myTag", "TextChanged");
                 if (length >= 4) {
                     emerName.requestFocus();
                 }

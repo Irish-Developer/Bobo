@@ -26,10 +26,9 @@ import com.google.firebase.auth.FirebaseAuth;
 
 /**
  * Name: Youcef O'Connor
- * Number:x13114557
+ * Number: x13114557
  * Date: 14 Feb 2017
- * Registration Page.
- *
+ * Class: LoginActivity
  */
 
 public class LoginActivity extends AppCompatActivity {
@@ -64,7 +63,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
-
+                finish();
             }
         });
 
@@ -103,10 +102,11 @@ public class LoginActivity extends AppCompatActivity {
                                     } else {
                                         Toast.makeText(LoginActivity.this, "Email address not valid", Toast.LENGTH_SHORT).show();
                                     }
-                                } else {                                                                                    //If authentication was successful then take the user to MainActivity
+                                } else {
+                                    //If authentication was successful then take the user to MainActivity
+
                                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                     startActivity(intent);
-
                                     finish(); //close activity
                                 }
 

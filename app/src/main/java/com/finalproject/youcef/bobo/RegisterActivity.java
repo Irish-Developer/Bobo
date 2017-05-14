@@ -63,7 +63,7 @@ public class RegisterActivity extends AppCompatActivity implements Serializable 
         loginLink.setOnClickListener(new View.OnClickListener() {           //when the login link is press, the user is taken to the login screen
             @Override
             public void onClick(View v) {
-                finish();
+            finish();
             }
         });
 
@@ -91,11 +91,14 @@ public class RegisterActivity extends AppCompatActivity implements Serializable 
                 }
 
                 //Checks the pattern of the password
-                if (password.matches(passPattern)) {
+                if (password.matches(passPattern))
+                {
                     //Proceed
-                } else {
+                }
+                else
+                {
 
-                    Toast.makeText(getApplicationContext(), "Invalid Password", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(),"Invalid Password", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -105,6 +108,7 @@ public class RegisterActivity extends AppCompatActivity implements Serializable 
                 }
 
 
+
                 //When the entered details have met the standard, create user
                 //Display progress bar while creating user until auth result has returned
                 progressBar2.setVisibility(View.VISIBLE);
@@ -112,8 +116,6 @@ public class RegisterActivity extends AppCompatActivity implements Serializable 
                 //Creating user with email and password
                 fireAuth.createUserWithEmailAndPassword(addEmail, password)
                         .addOnCompleteListener(RegisterActivity.this, new OnCompleteListener<AuthResult>() {
-
-                            //onComplete method checks to make sure the user was created
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 Toast.makeText(RegisterActivity.this, "Account Created", Toast.LENGTH_SHORT).show();
@@ -136,12 +138,11 @@ public class RegisterActivity extends AppCompatActivity implements Serializable 
             }
         });
     }
-
-    //Keep RegisterActivity active / open until the user changes Activity or is interrupted
-    @Override
-    protected void onResume() {
-        super.onResume();
-        progressBar2.setVisibility(View.GONE);
-    }
+            //Keep RegisterActivity active / open until the user changes Activity or is interrupted
+            @Override
+            protected void onResume() {
+                super.onResume();
+                progressBar2.setVisibility(View.GONE);
+            }
 
 }

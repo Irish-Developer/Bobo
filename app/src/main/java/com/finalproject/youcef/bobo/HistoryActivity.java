@@ -76,7 +76,7 @@ public class HistoryActivity extends AppCompatActivity {
         //Get reference to user ID in "users" node
         userRef = FirebaseDatabase.getInstance().getReference("users").child(Uid);
 
-        //Create a history ID for every taxi used
+        //Get history ID for every taxi used
         historyId = userRef.push().getKey();
 
         //Get reference to "history" in "users" node

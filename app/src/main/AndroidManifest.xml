@@ -50,12 +50,6 @@
         </activity>
 
         <activity
-            android:name=".ContactsActivity"
-            android:screenOrientation="portrait">
-
-        </activity>
-
-        <activity
             android:name=".HistoryActivity"
             android:screenOrientation="portrait">
 
