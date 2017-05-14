@@ -1,5 +1,15 @@
 package com.finalproject.youcef.bobo;
 
+/**************************************************************************************************************************
+ * References:
+ *
+ * @uthor= Joe Mairini| Website= Linda.com | Web page= Convert lat long to address with geocoder | URL= https://www.lynda.com/Google-Play-Services-tutorials/Convert-lat-long-address-geocoder/474086/503689-4.html
+ *
+ * @uthor= Google| Website= Android Developers | Web page= ResultReceiver | URL= https://developer.android.com/reference/android/os/ResultReceiver.html
+ *
+ *******************************************************************************************************************************/
+
+
 
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -54,9 +64,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private Button mCheckButton, noButton, yesButton, usingNotReg, noButton2;
     private EditText taxireg;
     private ProgressBar progressBar;
+
     //Declaring TextView & Taxi driver
     private TextView taxiFname, taxiLname, licenseNum, taxiLexp, taxiRegNum, regOk, regNotOk, areYou;
-    //Declaring History data
+
     private String historyId;
     private String firstName;
     private String lastName;
@@ -68,74 +79,67 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private String mAddress;
     private String registered;
     private String taxiNumber;
-    //User
     private String userFname, userLname;
     private GoogleApiClient googleApiClient;
     private Boolean gotLocPermission;
     private Location mLastLocation;
+
     Timer t_ime = new Timer();
 
+    //Obtains address from the GeocodeService class
     protected AddressReceiver mAddressReceiver;
 
-    //The method is activated
-    protected void getAddressFromLoc(){
-        if(googleApiClient.isConnected() && gotLocPermission) {
-          try{
-              mLastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
-          }
-          catch (SecurityException e){
-              Log.d("myTag", "No Location Access");
-          }
-          if(mLastLocation != null){
-              //Intent that will get the address of users location
-              Intent intent = new Intent(this, GeocodeService.class);
-              intent.setAction(Constants.ACTION_ADDRESS_FROM_LOC);
-              intent.putExtra(Constants.RECEIVER_KEY,mAddressReceiver);
-              intent.putExtra(Constants.LOCATION_KEY, mLastLocation);
+            //The method is activated when the check button is pressed
+            protected void getAddressFromLoc(){
+                if(googleApiClient.isConnected() && gotLocPermission) {
+                  try{
+                      //Gets last location (longitude & latitude) from Google Play Services API
+                      mLastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+                  }
+                  catch (SecurityException e){
+                      Log.d("myTag", "No Location Access");
+                  }
+                  if(mLastLocation != null){
+                      //Intent that will get the address of users location
+                      //and send it to GeocodeService
+                      Intent intent = new Intent(this, GeocodeService.class);
+                      //Tell Constants to get address from the location
+                      intent.setAction(Constants.ACTION_ADDRESS_FROM_LOC);
+                      //Then store mAddressReceiver object and mLastLocation into the intent
+                      intent.putExtra(Constants.RECEIVER_KEY,mAddressReceiver);
+                      intent.putExtra(Constants.LOCATION_KEY, mLastLocation);
 
-              startService(intent);
-          }
-        }
-    }
+                      //startService is called to start getting the Address
+                      startService(intent);
+                  }
+                }
+            }
 
-//    protected void getAddressFromName(String name){
-//        if (name !=null && !name.isEmpty()){
-//            // gets the location address information
-//            Intent intent = new Intent(this, GeocodeService.class);
-//
-//            //gets the Constants class to
-//            intent.setAction(Constants.ACTION_LOC_FROM_ADDR);
-//            intent.putExtra(Constants.RECEIVER_KEY, mAddressReceiver);
-//            intent.putExtra(Constants.PLACE_NAME_KEY, name);
-//
-//            startActivity(intent);
-//        }
-//    }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        //Checks to make sure the Bobo has permission
-        if (requestCode == 1) {
-            if (grantResults.length>0 && grantResults [0] == PackageManager.PERMISSION_GRANTED) {
-                gotLocPermission = true;
+        @Override
+        public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+            //Checks to make sure the Bobo has permission
+            if (requestCode == 1) {
+                if (grantResults.length>0 && grantResults [0] == PackageManager.PERMISSION_GRANTED) {
+                    gotLocPermission = true;
+                }
             }
         }
-    }
-    //Automatically generated methods for Google Play Servicess
-    @Override
-    public void onConnected(Bundle connectionHint) {
-        //Check to see if Bobo has permission to access location
-        int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
+        //Automatically generated methods for Google Play Servicess
+        @Override
+        public void onConnected(Bundle connectionHint) {
+            //Check to see if Bobo has permission to access location
+            int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
 
-        //If not then ask for permission
-        if (permissionCheck != PackageManager.PERMISSION_GRANTED){
-            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-        } else {
-            //Else set gotlocPermission boolean to true
-            gotLocPermission = true;
+            //If not then ask for permission
+            if (permissionCheck != PackageManager.PERMISSION_GRANTED){
+                ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            } else {
+                //Else set gotlocPermission boolean to true
+                gotLocPermission = true;
+            }
+
         }
-
-    }
 
     @Override
     public void onConnectionSuspended(int cause) {
@@ -159,7 +163,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private FirebaseAuth auth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     //read from the taxi node on the database
-    private ChildEventListener mChildEventListener;
+//    private ChildEventListener mChildEventListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -220,19 +224,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         mAddressReceiver = new AddressReceiver(new android.os.Handler());
 
-//        Retrieving user details
 
+        //////////////////////////////////////////////////////////////////   Check button   ////////////////////////////////////////////////////////////
 
-
-        // TODO Calculate users age
-
-
-
-
-        //Check button
         mCheckButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 //Activates the gtAddressFromLoc method when the Continue button is pressed
                  getAddressFromLoc();
 
@@ -250,8 +248,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 Query a = mTaxiDatabaseReference.orderByChild("car_reg").equalTo(taxi_detail);
                 Query b = mTaxiDatabaseReference.orderByChild("license_no").equalTo(taxi_detail); //new 24/02
 
-                // a - is the quary for check car registration
-                // b - is the quary for check taxi license number
+                // a - is the query for checking car registration
+                // b - is the query for checking taxi license number
                 // They are called a and b to prevent them from getting mixed up as there a lot
                 // of variables with the names reg and license being used in this Activity.
                 a.addChildEventListener(MainActivity.this);
@@ -262,7 +260,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                 progressBar.setVisibility(View.VISIBLE);
             }
-        });
+        });/////////////////////////////////////////////////////////////////////// End of Check Button  ///////////////////////////////////////////////////////////
+
+
 
         // this listener will be called when there is change in firebase user session - https://firebase.google.com/docs/auth/android/password-auth
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
@@ -494,7 +494,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         //This intent lets the user send their message to there contacts
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
-        sendIntent.putExtra(Intent.EXTRA_TEXT, userFname +" " + userLname + " is using a taxi.\n\n" +"Driver details: \n\n      NOT REGISTERED " + "\n\n  Reg Plate No: " +taxiNumber+"\n\nPick up location:\n     " +mAddress);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, userFname +" " + userLname + " is using a taxi.\n\n"
+                +"Driver details: \n\n      NOT REGISTERED " + "\n\n  Reg Plate No: " +taxiNumber+
+                "\n\nPick up location:\n     " +mAddress +"\n\nThis message was sent using the Bobo App");
         sendIntent.setType("text/plain");
         startActivity(sendIntent);
     }//End of yesBtn
@@ -554,14 +556,19 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 return super.onOptionsItemSelected(item);
         }
     }
+
+
+    //extends the ResultsReceiver class
     class AddressReceiver extends ResultReceiver{
         public AddressReceiver (android.os.Handler handler) { super(handler);}
 
 
+        //generic interface for receiving a callback result from ADDRESS_KEY
+        //Bundle contains the address from the GeocodeService
         @Override
         protected void onReceiveResult(int resultCode, Bundle resultData){
             //get address or display error message (from intent)
-            mAddress = resultData.getString(Constants.ADDRESS_RESULT_KEY);
+            mAddress = resultData.getString(Constants.ADDRESS_KEY);
             Log.d("myTag","Address: -- " +mAddress);
         }
 

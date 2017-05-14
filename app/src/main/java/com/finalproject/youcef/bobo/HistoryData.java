@@ -1,22 +1,31 @@
 package com.finalproject.youcef.bobo;
 
-import android.util.Log;
+
+/**************************************************************************************************************************
+ * References:
+ *
+ * @uthor= Google | Website= Udacity | Web page= Firebase in a Weekend: Android | URL= https://www.udacity.com/course/firebase-in-a-weekend-by-google-android--ud0352
+ *
+ *
+ *******************************************************************************************************************************/
 
 /**
- * Created by Youcef on 10/04/2017.
+ * @uthor: Youcef O'Connor
+ * Date: 10/04/2017.
+ * Student No: x13114557
  */
 
 public class HistoryData {
 
-    public String date, driver_fname, driver_lname, license_expDate, license_number, reg_number, time;
+    public String date, driver_fname, driver_lname, license_number, reg_number, time;
 
-    double longitude, latitude ;
 
-    //This is needed for DataSanapshot.getValue(Historydata.class)
-    public HistoryData(){
+    //This is needed for DataSanapshot.getValue(HistorydActivity.class)
+    public HistoryData() {
 
     }
 
+    //Setters and Getters
     public String getDriver_lname() {
         return driver_lname;
     }
@@ -25,13 +34,6 @@ public class HistoryData {
         this.driver_lname = driver_lname;
     }
 
-    public String getLicense_expDate() {
-        return license_expDate;
-    }
-
-    public void setLicense_expDate(String license_expDate) {
-        this.license_expDate = license_expDate;
-    }
 
     public String getLicense_number() {
         return license_number;
@@ -57,21 +59,6 @@ public class HistoryData {
         this.time = time;
     }
 
-    public double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
-    }
-
-    public double getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
-    }
 
     public String getDate() {
         return date;
@@ -89,18 +76,4 @@ public class HistoryData {
         this.driver_fname = driver_fname;
     }
 
-    @Override
-    public String toString() {
-        return "HistoryData{" +
-                "date='" + date + '\'' +
-                ", driver_fname='" + driver_fname + '\'' +
-                ", driver_lname='" + driver_lname + '\'' +
-                ", license_expDate='" + license_expDate + '\'' +
-                ", license_number='" + license_number + '\'' +
-                ", reg_number='" + reg_number + '\'' +
-                ", time='" + time + '\'' +
-                ", longitude='" + longitude + '\'' +
-                ", latitude='" + latitude + '\'' +
-                '}';
-    }
 }

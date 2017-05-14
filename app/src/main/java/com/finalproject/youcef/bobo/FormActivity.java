@@ -36,9 +36,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.twitter.sdk.android.core.models.User;
 
 import java.lang.ref.Reference;
-// Email regular expression:
+
 /**
- * Created by Youcef on 02/03/2017.
+ * @uthor: Youcef O'Connor
+ * Date: 02/03/2017.
+ * Student No: x13114557
  */
 
 public class FormActivity extends AppCompatActivity {
@@ -47,7 +49,7 @@ public class FormActivity extends AppCompatActivity {
     private ProgressBar progressBar3;
     private Button continBtn;
     private DatabaseReference mDatabaseRef;
-    private String contactsId, name;
+    private String contactsId;
     private FirebaseAuth auth;
     private String Uid;
 
@@ -58,15 +60,17 @@ public class FormActivity extends AppCompatActivity {
 
         //Getting Firebase Authenticate instance
         auth = FirebaseAuth.getInstance();
+
+        //Get user ID
         Uid = auth.getCurrentUser().getUid();
 
-        mDatabaseRef = FirebaseDatabase.getInstance().getReference("users").child(Uid);      //Instance of DatabaseReference needed to read and write to Firebase
-            Log.d("MyTag", "uid: " +Uid);
+        //Get reference to user ID in "users" node
+        mDatabaseRef = FirebaseDatabase.getInstance().getReference("users").child(Uid);
 
-
+        //Create contacts ID for each contact created
         contactsId = mDatabaseRef.push().getKey();
-           Log.d("MyTag", "contact id: " +contactsId);
-//        FirebaseDatabase = mDatabaseRef.getReference("users");
+
+
 
         fname = (EditText) findViewById(R.id.firstName);
         lname = (EditText) findViewById(R.id.lastName);
@@ -93,13 +97,14 @@ public class FormActivity extends AppCompatActivity {
                 String day = dobDay.getText().toString().trim();
                 String month = dobMonth.getText().toString().trim();
                 String year = dobYear.getText().toString().trim();
+                //This is the regular expression for date of birth
                 String dobPattern = "^(((0[1-9]|[12]\\d|3[01])\\/(0[13578]|1[02])\\/((1[6-9]|[2-9]\\d)\\d{2}))|((0[1-9]|[12]\\d|30)\\/(0[13456789]|1[012])\\/((1[6-9]|[2-9]\\d)\\d{2}))|((0[1-9]|1\\d|2[0-8])\\/02\\/((1[6-9]|[2-9]\\d)\\d{2}))|(29\\/02\\/((1[6-9]|[2-9]\\d)(0[48]|[2468][048]|[13579][26])|((16|[2468][048]|[3579][26])00))))$";
 
                 //Here I am putting the dob input together into a String like this dd/mm/yy
                 //Then I am going to check it with the dobPattern to make sure it's a valid dob
                 String tempDob = (day + "/" + month + "/" + year);
-                Log.d("myTag","Temp Dob " +tempDob);
 
+                //Check that all the EditText field are not empty
                 if (TextUtils.isEmpty(firstName)) {
                     Toast.makeText(getApplicationContext(), "Add your first name", Toast.LENGTH_SHORT).show();
                     return;
@@ -136,27 +141,17 @@ public class FormActivity extends AppCompatActivity {
                 }
 
                 // Checks the pattern of the email address
-                if (eEmail.matches(ePattern))
-                {
-                    Log.d("myTag","valid Email Address " + eEmail);
-//                    Toast.makeText(getApplicationContext(),"valid email address",Toast.LENGTH_SHORT).show();
-                }
-                else
-                {
-                    Log.d("myTag","Invalid Email Address " + eEmail);
-                    Toast.makeText(getApplicationContext(),"Invalid email address", Toast.LENGTH_SHORT).show();
+                if (eEmail.matches(ePattern)) {
+
+                } else {
+                    Toast.makeText(getApplicationContext(), "Invalid email address", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
                 //Checks the pattern of dob
-                if (tempDob.matches(dobPattern))
-                {
-                    Log.d("myTag","valid Date of Birth " + tempDob);
-                }
-                else
-                {
-                    Log.d("myTag","Invalid dob " + tempDob);
-                    Toast.makeText(getApplicationContext(),"Invalid Date of Birth", Toast.LENGTH_SHORT).show();
+                if (tempDob.matches(dobPattern)) {
+                } else {
+                    Toast.makeText(getApplicationContext(), "Invalid Date of Birth", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -183,7 +178,7 @@ public class FormActivity extends AppCompatActivity {
 
 
                 if (!TextUtils.isEmpty(firstName))
-                Log.d("MyTag", "firstName");
+                    Log.d("MyTag", "firstName");
 
                 //Confirmation from Firebase Realtime database of upload success
                 DatabaseReference dataRef = mDatabaseRef.child("name").child("fname");
@@ -191,12 +186,12 @@ public class FormActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                         if (databaseError != null) {
-                            Log.d("MyTag","databaseError");
+                            Log.d("MyTag", "databaseError");
                             Toast.makeText(FormActivity.this, "Data update failed", Toast.LENGTH_SHORT).show();
                         } else {
                             startActivity(new Intent(FormActivity.this, MainActivity.class));
                             Toast.makeText(FormActivity.this, "Welcome to Bobo!", Toast.LENGTH_SHORT).show();
-                            Log.d("MyTag","database works!");
+                            Log.d("MyTag", "database works!");
                             finish();
                         }
 
@@ -213,12 +208,16 @@ public class FormActivity extends AppCompatActivity {
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 //Automatically generated method - cannot be removed
             }
+
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 Integer length = dobDay.getText().length();
                 Log.d("myTag", "TextChanged");
-                if(length >= 2){
-                    dobMonth.requestFocus();}}
+                if (length >= 2) {
+                    dobMonth.requestFocus();
+                }
+            }
+
             @Override
             public void afterTextChanged(Editable s) {
                 //Automatically generated method - cannot be removed
@@ -230,32 +229,36 @@ public class FormActivity extends AppCompatActivity {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
+
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 Integer length = dobMonth.getText().length();
                 Log.d("myTag", "TextChanged");
-                if(length >= 2){
+                if (length >= 2) {
                     dobYear.requestFocus();
                 }
             }
+
             @Override
             public void afterTextChanged(Editable s) {
             }
         });
 
-        //Automatically move from dobYear EditText to emarName EditText
+        //Automatically move from dobYear EditText to emerName EditText
         dobYear.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
+
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 Integer length = dobYear.getText().length();
                 Log.d("myTag", "TextChanged");
-                if(length >= 4){
+                if (length >= 4) {
                     emerName.requestFocus();
                 }
             }
+
             @Override
             public void afterTextChanged(Editable s) {
             }

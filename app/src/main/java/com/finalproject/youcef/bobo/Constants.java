@@ -1,28 +1,38 @@
 package com.finalproject.youcef.bobo;
 
-import android.app.IntentService;
-import android.os.Bundle;
-import android.support.v4.os.ResultReceiver;
+
+ /**************************************************************************************************************************
+ * References:
+ *
+ * @uthor= Joe Mairini| Website= Linda.com | Web page= Convert lat long to address with geocoder | URL= https://www.lynda.com/Google-Play-Services-tutorials/Convert-lat-long-address-geocoder/474086/503689-4.html
+ *
+  * @uthor= Google| Website= Android Developers | Web page= Displaying a Location Address | URL= https://developer.android.com/training/location/display-address.html
+ *
+ *******************************************************************************************************************************/
+
 
 /**
- * Created by Youcef on 25/04/2017.
+ * @uthor: Youcef O'Connor
+ * Date: 25/04/2017.
+ * Student No: x13114557
  */
 
 public class Constants {
 
-    public static final int RESULT_SUCCESS = 0;
-    public static final int RESULT_ERROR = 1;
+    //This class holds constant values for retrieving the address from location
 
-    public static final String PACKAGE_NAME =
-            "com.finalproject.youcef.bobo";
-    public static final String ADDRESS_RESULT_KEY = PACKAGE_NAME + ".ADDRESS-RESULT";
+    //SUCCESS_RESULT & ERROR_RESULT are numeric constants that indicate success or failure
+    public static final int SUCCESS_RESULT = 0;
+    public static final int ERROR_RESULT = 1;
 
-    public static final String RECEIVER_KEY = PACKAGE_NAME + ".RECEIVER";
-    public static final String LOCATION_KEY = PACKAGE_NAME + ".LOC_DATA";
-    public static final String PLACE_NAME_KEY = PACKAGE_NAME + ".PLACE-NAME";
+    //Declaring strings to be passed between service & main activity
+    public static final String PACKAGE_ID = "com.finalproject.youcef.bobo";
+    public static final String RECEIVER_KEY = PACKAGE_ID + ".RECEIVER";
+    public static final String ADDRESS_KEY = PACKAGE_ID + ".ADDRESS-RESULT";
+    public static final String LOCATION_KEY = PACKAGE_ID + ".LOC_DATA";
 
-    public static final String ACTION_ADDRESS_FROM_LOC = PACKAGE_NAME + ".ADDR-FROM-LOC";
-    public static final String ACTION_LOC_FROM_ADDR = PACKAGE_NAME + ".LOC-FROM-ADDR";
+    //This gets the Address
+    public static final String ACTION_ADDRESS_FROM_LOC = PACKAGE_ID + ".ADDR-FROM-LOC";
 
 
 }

@@ -1,5 +1,15 @@
 package com.finalproject.youcef.bobo;
 
+
+/**************************************************************************************************************************
+ * References:
+ *
+ * @uthor= Google | Website= Udacity | Web page= Firebase in a Weekend: Android | URL= https://www.udacity.com/course/firebase-in-a-weekend-by-google-android--ud0352
+ *
+ *
+ *******************************************************************************************************************************/
+
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -8,35 +18,31 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.firebase.ui.database.FirebaseListAdapter;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-//import com.google.firebase.
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 
 /**
- * Created by Youcef on 10/04/2017.
+ * @uthor: Youcef O'Connor
+ * Date: 10/04/2017.
+ * Student No: x13114557
  */
 
-public class HistoryActivity extends AppCompatActivity{
+
+public class HistoryActivity extends AppCompatActivity {
 
 
-
-    private String Uid, historyId, taxiFname, lname, expDate, lNumber, regNumber;
+    private String Uid, historyId;
     private HistoryAdapter historyAdapter;
     private ListView historyListView;
 
@@ -54,37 +60,34 @@ public class HistoryActivity extends AppCompatActivity{
     //read from the taxi node on the database
     private ChildEventListener mChildEventListener;
 
-//
-
-
 
     @Override
-    public void onCreate (Bundle savedInstanceState){
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
 
         //Firebase instances
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         auth = FirebaseAuth.getInstance();
+
+        //Get user ID
         Uid = auth.getCurrentUser().getUid();
+
+        //Get reference to user ID in "users" node
         userRef = FirebaseDatabase.getInstance().getReference("users").child(Uid);
+
+        //Create a history ID for every taxi used
         historyId = userRef.push().getKey();
 
+        //Get reference to "history" in "users" node
         driverRef = mFirebaseDatabase.getReference("users").child(Uid).child("history");
 
-        Log.d("myTag", "driverRef: " +driverRef);
         historyListView = (ListView) findViewById(R.id.historyLV);
 
         //Creating ArrayList and connecting it with the History Adapter
         final List<HistoryData> historyDatas = new ArrayList<>();
         historyAdapter = new HistoryAdapter(this, R.layout.item_history, historyDatas);
         historyListView.setAdapter(historyAdapter);
-        Log.d("myTag", "driverRef: " +historyAdapter);
-
-
-        Log.d("myTag", "EventListener: " +mChildEventListener);
-
-
 
         // this listener will be called when there is change in firebase user session - https://firebase.google.com/docs/auth/android/password-auth
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
@@ -92,55 +95,46 @@ public class HistoryActivity extends AppCompatActivity{
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
 
-
-                Log.d("myTag","StateListener user ID");
                 if (user == null) {                                                             //User is signed out
-
-                    Log.d("MyTag", "User session has ended");
                     startActivity(new Intent(HistoryActivity.this, LoginActivity.class));          //Go to Login screen
-                    Log.d("MyTag", "Signing out user");
                     finish();
                 }
             }
         };
 
+        //This is called when data has been found
+        if (mChildEventListener == null) {
+            mChildEventListener = new ChildEventListener() {
+                @Override
+                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                    //Uses HistoryData class to sort the data and then gets data returned
+                    HistoryData historyData = dataSnapshot.getValue(HistoryData.class);
+                    //Sends data from HistoryData to HistoryAdapter
+                    historyAdapter.add(historyData);
+                }
 
-            if (mChildEventListener == null){
-                Log.d("myTag", "EventListener2: " +mChildEventListener);
-                mChildEventListener = new ChildEventListener() {
-                    @Override
-                    public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                @Override
+                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
 
-                        HistoryData historyData = dataSnapshot.getValue(HistoryData.class);
-                        historyAdapter.add(historyData);
-                        Log.d("myTag", "List View Driver first name: " + dataSnapshot);
+                }
 
-                        Log.d("myTag", "List View Driver first name: " + historyData);
-                    }
+                @Override
+                public void onChildRemoved(DataSnapshot dataSnapshot) {
 
-                    @Override
-                    public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                }
 
-                    }
+                @Override
+                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
 
-                    @Override
-                    public void onChildRemoved(DataSnapshot dataSnapshot) {
+                }
 
-                    }
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
 
-                    @Override
-                    public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+                }
+            };
 
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        Log.d("myTag", "List View Error");
-
-                    }
-                };
-
-                driverRef.addChildEventListener(mChildEventListener);
+            driverRef.addChildEventListener(mChildEventListener);
         }
 
     }//Close onCreate
@@ -154,52 +148,43 @@ public class HistoryActivity extends AppCompatActivity{
         return true;
     }
 
-
+    //On HistoryActivity startup
     @Override
     public void onStart() {
-        //Connect to Google API
-//        googleApiClient.connect();
-
         //Check authentication on startup
         super.onStart();
         auth.addAuthStateListener(mAuthStateListener);
         Log.d("myTag", "onStart " + mAuthStateListener);
     }
 
+    //Stopping HistoryActivity
     @Override
     public void onStop() {
-        //Disconnect from Google API
-//        googleApiClient.disconnect();
         super.onStop();
 
         //This listens to see if the user has signed out
         if (mAuthStateListener != null) {
             auth.removeAuthStateListener(mAuthStateListener);
-            Log.d("myTag", "onStop ");
         }
     }
 
     //sign out method
     public void signOut() {
         auth.signOut();
-        Log.d("myTag","SignOut activated");
     }
 
-
+    //Main menu
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.sign_out_option:
                 //Sign out
                 signOut();
-                Log.d("myTag","Sign out");
                 return true;
             case R.id.home:
                 //Go to Verify page
-//                Intent(new Intent(HistoryActivity.this, MainActivity.class));
                 Intent intent = new Intent();
                 setResult(RESULT_OK, intent);
                 finish();
-                Log.d("myTag","Gone to Verify");
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

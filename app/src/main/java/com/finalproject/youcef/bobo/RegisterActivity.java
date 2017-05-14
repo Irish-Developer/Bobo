@@ -107,22 +107,24 @@ public class RegisterActivity extends AppCompatActivity implements Serializable 
                 progressBar2.setVisibility(View.VISIBLE);
 
                 //Creating user with email and password
-                fireAuth.createUserWithEmailAndPassword(addEmail, password).addOnCompleteListener(RegisterActivity.this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        Toast.makeText(RegisterActivity.this, "Create User with email:onComplete" + task.isSuccessful(), Toast.LENGTH_SHORT).show();
-                        Log.d("myTag", "Create User " + email + password);
-                        progressBar2.setVisibility(View.GONE);                  //Stop running the progressbar
+                fireAuth.createUserWithEmailAndPassword(addEmail, password)
+                        .addOnCompleteListener(RegisterActivity.this, new OnCompleteListener<AuthResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                Toast.makeText(RegisterActivity.this, "Create User with email:onComplete"
+                                        + task.isSuccessful(), Toast.LENGTH_SHORT).show();
+                                Log.d("myTag", "Create User " + email + password);
+                                progressBar2.setVisibility(View.GONE);                  //Stop running the progressbar
 
-                        if (!task.isSuccessful()) {
-                            Toast.makeText(RegisterActivity.this, "Registration failed!", Toast.LENGTH_SHORT).show();
-                        } else {
-                            startActivity(new Intent(RegisterActivity.this, FormActivity.class));
-                            finish();
-                        }
-                    }
+                                if (!task.isSuccessful()) {
+                                    Toast.makeText(RegisterActivity.this, "Registration failed!", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    startActivity(new Intent(RegisterActivity.this, FormActivity.class));
+                                    finish();
+                                }
+                            }
 
-                });
+                        });
 
 
             }
