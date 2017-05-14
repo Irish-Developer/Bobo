@@ -3,7 +3,7 @@ package com.finalproject.youcef.bobo;
 /**************************************************************************************************************************
  * References:
  *
- * @uthor= | Website=  | Web page=  | URL=
+ * @uthor=  Ravi Tamada | Website= Android Hive | Web page= Android Getting Started with Firebase – Login and Registration Authentication | URL= http://www.androidhive.info/2016/06/android-getting-started-firebase-simple-login-registration-auth/
  *
  *******************************************************************************************************************************/
 
@@ -13,7 +13,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -34,6 +33,7 @@ import com.google.firebase.auth.FirebaseAuth;
  */
 
 public class LoginActivity extends AppCompatActivity {
+
     private EditText pass, email;
     private ProgressBar progressBar;
     private Button loginBtn, registerLink;
@@ -42,18 +42,15 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        final FirebaseAuth fireAuth = FirebaseAuth.getInstance();                                  //Instance of Firebase Auth
-        Log.d("MyTag", "get FirebaseAut instance");
-
         setContentView(R.layout.activity_login);
-        Log.d("MyTag", "SetContentView- activity_Login");
+
+        //Firebase Authentication Instance variables
+        final FirebaseAuth fireAuth = FirebaseAuth.getInstance();
 
         //If the user is already signed in then continue onto the MainActivity
         if (fireAuth.getCurrentUser() != null) {
             startActivity(new Intent(LoginActivity.this, MainActivity.class));
             finish();
-            Log.d("MyTag", "User already logged in!");
         }
 
         email = (EditText) findViewById(R.id.emailInput);
@@ -61,58 +58,60 @@ public class LoginActivity extends AppCompatActivity {
         registerLink = (Button) findViewById(R.id.signupBtn);
         loginBtn = (Button) findViewById(R.id.loginBtn);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
-        String passPattern = "((?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{8,30})";
 
+        //Register Link
         registerLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
-                Log.d("myTag", "Register link");
+
             }
         });
 
+        //Login Button
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("MyTag", "Login button onClick");
+
+                //Get email and password from EditText fields to string
                 String emailInput = email.getText().toString();
-                final String password = pass.getText().toString();
-                Log.d("MyTag", "retrieve edit text input");
+                String password = pass.getText().toString();
+
+                //If fields are empty then display Toast message
                 if (TextUtils.isEmpty(password)) {
-                    Toast.makeText(getApplicationContext(), "Enter password", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Please enter password", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 if (TextUtils.isEmpty(emailInput)) {
-                    Toast.makeText(getApplicationContext(), "Enter email", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Please enter email address", Toast.LENGTH_SHORT).show();
                     return;
                 }
+
 
                 progressBar.setVisibility(View.VISIBLE);                                                            //When the email & password have been entered and the Login button has been pressed, display progress bar
 
                 //Check the user input with FirebaseAuth to authenticate user
                 fireAuth.signInWithEmailAndPassword(emailInput, password).addOnCompleteListener(LoginActivity.this,
                         new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        Log.d("myTag", "Login user " + email + pass);
-                        progressBar.setVisibility(View.GONE);                                                       //stop running progress bar
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                progressBar.setVisibility(View.GONE);                                                       //stop running progress bar
 
-                        if (!task.isSuccessful()) {
-                            if (pass.length() < 8) {                                                                //Minimum length of password characters is 8
-                                pass.setError("Password is not valid");                //If something is wrong, let the user know via toast
-                            } else {
-                                Toast.makeText(LoginActivity.this, "Email address not valid", Toast.LENGTH_SHORT).show();
-                            }
-                        } else {                                                                                    //If authentication was successful then take the user to MainActivity
-                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                            startActivity(intent);
+                                if (!task.isSuccessful()) {
+                                    if (pass.length() < 8) {                                                                //Minimum length of password characters is 8
+                                        pass.setError("Password is not valid");                                             //If something is wrong, let the user know via toast
+                                    } else {
+                                        Toast.makeText(LoginActivity.this, "Email address not valid", Toast.LENGTH_SHORT).show();
+                                    }
+                                } else {                                                                                    //If authentication was successful then take the user to MainActivity
+                                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                    startActivity(intent);
 
-                            finish(); //close activity
-                        }
+                                    finish(); //close activity
+                                }
 
-
-                    } //close onClick method
-                });
+                            } //close onClick method
+                        });
             }
         });
 
